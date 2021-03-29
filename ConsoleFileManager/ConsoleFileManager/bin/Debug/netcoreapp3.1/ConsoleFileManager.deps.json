@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "ConsoleFileManager/1.0.0": {
+        "runtime": {
+          "ConsoleFileManager.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ConsoleFileManager/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

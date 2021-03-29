@@ -1,0 +1,13 @@
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\bin\Debug\netcoreapp3.1\ConsoleFileManager.exe
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\bin\Debug\netcoreapp3.1\ConsoleFileManager.deps.json
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\bin\Debug\netcoreapp3.1\ConsoleFileManager.runtimeconfig.json
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\bin\Debug\netcoreapp3.1\ConsoleFileManager.runtimeconfig.dev.json
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\bin\Debug\netcoreapp3.1\ConsoleFileManager.dll
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\bin\Debug\netcoreapp3.1\ConsoleFileManager.pdb
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\obj\Debug\netcoreapp3.1\ConsoleFileManager.csprojAssemblyReference.cache
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\obj\Debug\netcoreapp3.1\ConsoleFileManager.AssemblyInfoInputs.cache
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\obj\Debug\netcoreapp3.1\ConsoleFileManager.AssemblyInfo.cs
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\obj\Debug\netcoreapp3.1\ConsoleFileManager.csproj.CoreCompileInputs.cache
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\obj\Debug\netcoreapp3.1\ConsoleFileManager.dll
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\obj\Debug\netcoreapp3.1\ConsoleFileManager.pdb
+C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\ConsoleFileManager\obj\Debug\netcoreapp3.1\ConsoleFileManager.genruntimeconfig.cache
