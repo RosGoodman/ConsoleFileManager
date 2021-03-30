@@ -2,7 +2,7 @@
 
 namespace ConsoleFileManager.Models
 {
-    internal class FileListModel : FileList
+    internal class FileListModel
     {
         private List<FileModel> _fileList;
 

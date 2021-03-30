@@ -7,6 +7,13 @@ namespace ConsoleFileManager.Controls
     internal class Controller
     {
         private FileModel _selectedFile;    //выделенный файл
+        private FileListModel _mainListFiles;   //список файлов 1 уровня
+        private FileListModel _subListFiles;    //список файлов 2 уровня
+
+        public Controller()
+        {
+
+        }
 
         /// <summary>Получить информацию о файле.</summary>
         /// <returns>Информация построчно.</returns>
