@@ -2,6 +2,8 @@
 using ConsoleFileManager.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Configuration;
 
 namespace ConsoleFileManager.Controllers.Settings
 {
@@ -64,11 +66,20 @@ namespace ConsoleFileManager.Controllers.Settings
         internal override void LoadProperty()
         {
             PropValue = Settings1.Default.Path;
+            if(PropValue == "")
+            {
+                DriveInfo[] drive = DriveInfo.GetDrives();
+                PropValue = drive[0].Name;
+            }
         }
 
         internal override void SaveProperty()
         {
             Settings1.Default.Path = PropValue;
+            Settings1.Default.Upgrade();
+            Settings1.Default.Save();
+            
+            Settings1.Default.Reload();
         }
 
         internal override void SetPropName()
@@ -88,7 +99,13 @@ namespace ConsoleFileManager.Controllers.Settings
         internal override void SaveProperty()
         {
             if (int.TryParse(PropValue, out int n))
+            {
                 Settings1.Default.WindowWidth = n;
+                Settings1.Default.Save();
+                Settings1.Default.Reload();
+                Settings1.Default.Upgrade();
+                
+            }
             else
                 throw new Exception($"Попытка сохранить в {PropName} значение {PropValue}. Должно быть число.");
         }
@@ -110,7 +127,11 @@ namespace ConsoleFileManager.Controllers.Settings
         internal override void SaveProperty()
         {
             if (int.TryParse(PropValue, out int n))
+            {
                 Settings1.Default.WindowHeight = n;
+                Settings1.Default.Save();
+                Settings1.Default.Reload();
+            }
             else
                 throw new Exception($"Попытка сохранить в {PropName} значение {PropValue}. Должно быть число.");
         }
@@ -132,7 +153,11 @@ namespace ConsoleFileManager.Controllers.Settings
         internal override void SaveProperty()
         {
             if (int.TryParse(PropValue, out int n))
+            {
                 Settings1.Default.StringCount = n;
+                Settings1.Default.Save();
+                Settings1.Default.Reload();
+            }
             else
                 throw new Exception($"Попытка сохранить в {PropName} значение {PropValue}. Должно быть число.");
         }

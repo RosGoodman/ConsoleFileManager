@@ -1,4 +1,5 @@
-﻿using ConsoleFileManager.Models;
+﻿using ConsoleFileManager.Controllers.Settings;
+using ConsoleFileManager.Models;
 using System.Collections.Generic;
 using System.IO;
 
@@ -10,9 +11,11 @@ namespace ConsoleFileManager.Controls
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
 
+        internal Settings SettingsControl { get; set; } //свойство для доступа к настройкам
+
         public Controller()
         {
-
+            SettingsControl = new Settings(); //загружаем настройки
         }
 
         /// <summary>Получить информацию о файле.</summary>
