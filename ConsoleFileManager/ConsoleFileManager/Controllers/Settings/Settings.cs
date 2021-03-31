@@ -1,8 +1,7 @@
 ﻿
+using ConsoleFileManager.Controllers.Services;
 using ConsoleFileManager.Models;
-using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 
 namespace ConsoleFileManager.Controllers.Settings
@@ -10,7 +9,9 @@ namespace ConsoleFileManager.Controllers.Settings
     /// <summary>Класс описывающий действия с настройками.</summary>
     internal class Settings
     {
-        private List<PropertyBase> _propList = new List<PropertyBase>();  //список настроек
+        private string _settingsFileName = "Settins.json";  //имя файла с настройками
+        private List<PropertyBase> _propList = new List<PropertyBase>();  //список экземпляров классов
+        private Dictionary<string, string> _settings;    //настройки программы (параметр\значение). Для сериадизации.
 
         internal List<PropertyBase> PropList
         {
@@ -34,17 +35,24 @@ namespace ConsoleFileManager.Controllers.Settings
         {
             foreach(PropertyBase prop in _propList)
             {
-                if (prop.PropName == propName)
-                    prop.PropValue = value;
+                if (prop.propName == propName)
+                {
+                    prop.propValue = value;
+                    break;
+                }
             }
         }
 
         /// <summary>Загрузть настрйки.</summary>
         internal void LoadSettings()
         {
-            foreach(PropertyBase prop in _propList)
+            _settings = JsonFile.ReadSettingsFromJson(_settingsFileName);   //загружаем из файла
+
+            if (_settings.Count == 0) return;
+
+            foreach(PropertyBase prop in _propList) //присваиваем экземплярам
             {
-                prop.LoadProperty();
+                prop.LoadProperty(_settings);
             }
         }
 
@@ -53,8 +61,15 @@ namespace ConsoleFileManager.Controllers.Settings
         {
             foreach(PropertyBase prop in _propList)
             {
-                prop.SaveProperty();
+                //условие, если файла с настройками еще нет
+                if (_settings.ContainsKey(prop.propName))
+                    _settings[prop.propName] = prop.propValue;
+                else
+                {
+                    _settings.Add(prop.propName, prop.propValue);
+                }
             }
+            JsonFile.WriteSettingsInJson(_settings, _settingsFileName);
         }
     }
 
@@ -63,106 +78,96 @@ namespace ConsoleFileManager.Controllers.Settings
     /// <summary>Путь последней открытой директории.</summary>
     internal class LastPathProperty : PropertyBase
     {
-        internal override void LoadProperty()
+        internal override void ChangeProperty(Dictionary<string, string> settings, string value)
         {
-            PropValue = Settings1.Default.Path;
-            if(PropValue == "")
+            propValue = value;
+        }
+
+        internal override void LoadProperty(Dictionary<string, string> settings)
+        {
+            propValue = settings[propName];
+            if(propValue == "")
             {
                 DriveInfo[] drive = DriveInfo.GetDrives();
-                PropValue = drive[0].Name;
+                propValue = drive[0].Name;
             }
         }
 
-        internal override void SaveProperty()
+        internal override void SetDefoltValues()
         {
-            string sAttr = ConfigurationManager.AppSettings.Get("Path");
-            //Settings1.Default.Path = PropValue;
-            //Settings1.Default.
-        }
+            propName = "LastPath";
 
-        internal override void SetPropName()
-        {
-            PropName = "LastPath";
+            DriveInfo[] drive = DriveInfo.GetDrives();
+            propValue = drive[0].Name;
         }
     }
 
     /// <summary>Ширина окна.</summary>
     internal class WindowWidthProperty : PropertyBase
     {
-        internal override void LoadProperty()
+        private string _defoltValue = "600";
+        internal override void ChangeProperty(Dictionary<string, string> settings, string value)
         {
-            PropValue = Settings1.Default.WindowWidth.ToString();
+            propValue = value;
         }
 
-        internal override void SaveProperty()
+        internal override void LoadProperty(Dictionary<string, string> settings)
         {
-            if (int.TryParse(PropValue, out int n))
-            {
-                Settings1.Default.WindowWidth = n;
-                Settings1.Default.Save();
-                Settings1.Default.Reload();
-                Settings1.Default.Upgrade();
-                
-            }
-            else
-                throw new Exception($"Попытка сохранить в {PropName} значение {PropValue}. Должно быть число.");
+            propValue = settings[propName];
+            if (propValue == "")
+                propValue = _defoltValue;
         }
 
-        internal override void SetPropName()
+        internal override void SetDefoltValues()
         {
-            PropName = "WindowWidth";
+            propName = "WindowWidth";
+            propValue = _defoltValue;
         }
     }
 
     /// <summary>Высота окна.</summary>
     internal class WindowHeightProperty : PropertyBase
     {
-        internal override void LoadProperty()
+        private string _defoltValue = "400";
+        internal override void ChangeProperty(Dictionary<string, string> settings, string value)
         {
-            PropValue = Settings1.Default.WindowHeight.ToString();
+            propValue = value;
         }
 
-        internal override void SaveProperty()
+        internal override void LoadProperty(Dictionary<string, string> settings)
         {
-            if (int.TryParse(PropValue, out int n))
-            {
-                Settings1.Default.WindowHeight = n;
-                Settings1.Default.Save();
-                Settings1.Default.Reload();
-            }
-            else
-                throw new Exception($"Попытка сохранить в {PropName} значение {PropValue}. Должно быть число.");
+            propValue = settings[propName];
+            if (propValue == "")
+                propValue = _defoltValue;
         }
 
-        internal override void SetPropName()
+        internal override void SetDefoltValues()
         {
-            PropName = "WindowHeight";
+            propName = "WindowHeight";
+            propValue = _defoltValue;
         }
     }
 
     /// <summary>Количесво строк на одной странице.</summary>
     internal class StringCountProperty : PropertyBase
     {
-        internal override void LoadProperty()
+        private string _defoltValue = "40";
+        internal override void ChangeProperty(Dictionary<string, string> settings, string value)
         {
-            PropValue = Settings1.Default.StringCount.ToString();
+            propValue = value;
         }
 
-        internal override void SaveProperty()
+        internal override void LoadProperty(Dictionary<string, string> settings)
         {
-            if (int.TryParse(PropValue, out int n))
-            {
-                Settings1.Default.StringCount = n;
-                Settings1.Default.Save();
-                Settings1.Default.Reload();
-            }
-            else
-                throw new Exception($"Попытка сохранить в {PropName} значение {PropValue}. Должно быть число.");
+            propValue = settings[propName];
+            if (propValue == "")
+                propValue = _defoltValue;
         }
 
-        internal override void SetPropName()
+        internal override void SetDefoltValues()
         {
-            PropName = "StringCount";
+            propName = "StringCount";
+            propValue = _defoltValue;
         }
     }
 
