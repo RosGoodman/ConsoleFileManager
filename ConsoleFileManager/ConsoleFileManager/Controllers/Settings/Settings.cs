@@ -2,8 +2,8 @@
 using ConsoleFileManager.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Configuration;
+using System.IO;
 
 namespace ConsoleFileManager.Controllers.Settings
 {
@@ -75,11 +75,9 @@ namespace ConsoleFileManager.Controllers.Settings
 
         internal override void SaveProperty()
         {
-            Settings1.Default.Path = PropValue;
-            Settings1.Default.Upgrade();
-            Settings1.Default.Save();
-            
-            Settings1.Default.Reload();
+            string sAttr = ConfigurationManager.AppSettings.Get("Path");
+            //Settings1.Default.Path = PropValue;
+            //Settings1.Default.
         }
 
         internal override void SetPropName()
