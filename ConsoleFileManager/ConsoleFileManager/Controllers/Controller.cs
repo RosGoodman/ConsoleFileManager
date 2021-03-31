@@ -11,7 +11,7 @@ namespace ConsoleFileManager.Controls
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
 
-        internal Settings SettingsControl { get; set; } //свойство для доступа к настройкам
+        private Settings SettingsControl { get; set; } //свойство для доступа к настройкам
 
         public Controller()
         {
@@ -38,5 +38,21 @@ namespace ConsoleFileManager.Controls
 
             return fileInfo;
         }
+
+        #region SettingsControl interface
+
+        /// <summary>Установить новое значение параметра.</summary>
+        /// <param name="settingName">Наименование параметра.</param>
+        /// <param name="value">Новое значение параметра.</param>
+        public void SetNewSettingValue(string settingName, string value)
+            => SettingsControl.ChangeProperty(settingName, value);
+
+        /// <summary>Загрузить сохраненные настройки.</summary>
+        public void LoadSettings() => SettingsControl.LoadSettings();
+
+        /// <summary>Сохранить настройки.</summary>
+        public void SaveSettings() => SettingsControl.SaveSettings();
+
+        #endregion
     }
 }
