@@ -54,5 +54,11 @@ namespace ConsoleFileManager.Controls
         public void SaveSettings() => SettingsControl.SaveSettings();
 
         #endregion
+
+        /// <summary>Удалить файл.</summary>
+        internal void DeletingFile()
+        {
+
+        }
     }
 }
