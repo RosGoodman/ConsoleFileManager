@@ -3,21 +3,21 @@ using ConsoleFileManager.Controls;
 
 namespace ConsoleFileManager.Controllers.Commands
 {
-    internal class DeleteCommand : ICommand
+    internal class DeleteCommand : Command
     {
-        Controller reseiver;    //исполнитель команды
+        private Controller _reseiver;    //исполнитель команды
 
         public DeleteCommand(Controller r)
         {
-            reseiver = r;
+            _reseiver = r;
         }
 
-        void ICommand.Execute()
+        public override void Execute(string filename)
         {
-            reseiver.DeletingFile();
+            _reseiver.DeletingFile(filename);
         }
 
-        void ICommand.Undo()
+        public override void Undo()
         {
             throw new System.NotImplementedException();
         }

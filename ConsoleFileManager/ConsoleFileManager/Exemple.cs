@@ -1,8 +1,13 @@
-﻿using System;
+﻿using ConsoleFileManager.Controllers.Commands;
+using System;
 using System.Collections.Generic;
 
 namespace ConsoleFileManager
 {
+    //////////////////////////
+    //TODO: удалить класс
+    //////////////////////////
+
     class Example
     {
         static void Start()
@@ -27,11 +32,11 @@ namespace ConsoleFileManager
             Console.Read();
         }
     }
-    interface ICommand
-    {
-        void Execute();
-        void Undo();
-    }
+    //interface ICommand
+    //{
+    //    void Execute();
+    //    void Undo();
+    //}
 
     class TV
     {
@@ -46,7 +51,7 @@ namespace ConsoleFileManager
         }
     }
 
-    class TVOnCommand : ICommand
+    class TVOnCommand : Command
     {
         TV tv;
         public TVOnCommand(TV tvSet)
@@ -87,7 +92,7 @@ namespace ConsoleFileManager
         }
     }
 
-    class VolumeCommand : ICommand
+    class VolumeCommand : Command
     {
         Volume volume;
         public VolumeCommand(Volume v)
@@ -107,21 +112,21 @@ namespace ConsoleFileManager
 
     class MultiPult
     {
-        ICommand[] buttons;
-        Stack<ICommand> commandsHistory;
+        Command[] buttons;
+        Stack<Command> commandsHistory;
 
         public MultiPult()
         {
-            buttons = new ICommand[2];
+            buttons = new Command[2];
             for (int i = 0; i < buttons.Length; i++)
             {
                 //????????????
                 buttons[i] = new NoCommand();
             }
-            commandsHistory = new Stack<ICommand>();
+            commandsHistory = new Stack<Command>();
         }
 
-        public void SetCommand(int number, ICommand com)
+        public void SetCommand(int number, Command com)
         {
             buttons[number] = com;
         }
@@ -136,7 +141,7 @@ namespace ConsoleFileManager
         {
             if (commandsHistory.Count > 0)
             {
-                ICommand undoCommand = commandsHistory.Pop();
+                Command undoCommand = commandsHistory.Pop();
                 undoCommand.Undo();
             }
         }

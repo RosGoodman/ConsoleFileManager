@@ -1,11 +1,12 @@
-﻿using ConsoleFileManager.Controllers.Settings;
+﻿using ConsoleFileManager.Controllers.Services;
+using ConsoleFileManager.Controllers.Settings;
 using ConsoleFileManager.Models;
 using System.Collections.Generic;
 using System.IO;
 
 namespace ConsoleFileManager.Controls
 {
-    internal class Controller
+    public class Controller
     {
         private FileModel _selectedFile;    //выделенный файл
         private FileListModel _mainListFiles;   //список файлов 1 уровня
@@ -56,9 +57,10 @@ namespace ConsoleFileManager.Controls
         #endregion
 
         /// <summary>Удалить файл.</summary>
-        internal void DeletingFile()
+        /// <param name="filename">Имя удаляемого файла.</param>
+        internal void DeletingFile(string filename)
         {
-
+            WorkWithFiles.DeletingFile(filename);
         }
     }
 }
