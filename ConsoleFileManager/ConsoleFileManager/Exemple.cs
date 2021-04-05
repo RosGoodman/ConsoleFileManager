@@ -15,8 +15,8 @@ namespace ConsoleFileManager
             TV tv = new TV();
             Volume volume = new Volume();
             MultiPult mPult = new MultiPult();
-            mPult.SetCommand(0, new TVOnCommand(tv));
-            mPult.SetCommand(1, new VolumeCommand(volume));
+            //mPult.SetCommand(0, new TVOnCommand(tv));
+            //mPult.SetCommand(1, new VolumeCommand(volume));
             // включаем телевизор
             mPult.PressButton(0);
             // увеличиваем громкость
@@ -51,7 +51,7 @@ namespace ConsoleFileManager
         }
     }
 
-    class TVOnCommand : Command
+    class TVOnCommand //: Command
     {
         TV tv;
         public TVOnCommand(TV tvSet)
@@ -92,7 +92,7 @@ namespace ConsoleFileManager
         }
     }
 
-    class VolumeCommand : Command
+    class VolumeCommand //: Command
     {
         Volume volume;
         public VolumeCommand(Volume v)
@@ -121,7 +121,7 @@ namespace ConsoleFileManager
             for (int i = 0; i < buttons.Length; i++)
             {
                 //????????????
-                buttons[i] = new NoCommand();
+                //buttons[i] = new NoCommand();
             }
             commandsHistory = new Stack<Command>();
         }
@@ -133,7 +133,7 @@ namespace ConsoleFileManager
 
         public void PressButton(int number)
         {
-            buttons[number].Execute();
+            //buttons[number].Execute();
             // добавляем выполненную команду в историю команд
             commandsHistory.Push(buttons[number]);
         }
