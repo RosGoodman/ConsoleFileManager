@@ -1,48 +1,85 @@
 ﻿
-using System;
 using System.IO;
-using System.Security;
-using System.Security.Permissions;
 
 namespace ConsoleFileManager.Controllers.Services
 {
     /// <summary>Класс описывающий работу с файлами и папками.</summary>
     public class WorkWithFiles
     {
-        /// <summary>Удалить файл.</summary>
-        /// <param name="filename">Путь к удаляемому файлу/папке.</param>
-        internal static void DeletingFile(string filename)
+        private enum FileType
         {
-            if (Availability(filename))
-            {
+            Directory,
+            File,
+            NotFound
+        }
 
+        /// <summary>Удалить файл.</summary>
+        /// <param name="path">Путь к удаляемому файлу/папке.</param>
+        internal static void DeletingFile(string path)
+        {
+            switch (Exists(path))
+            {
+                case (FileType.File):
+                    FileInfo fileInfo = new FileInfo(path);
+                    fileInfo.Delete();
+                    break;
+                case (FileType.Directory):
+                    Directory.Delete(path, true); //true - если директория не пуста удаляем все ее содержимое
+                    break;
+                case (FileType.NotFound):
+                    //запись об ошибке - файл/папка не найден
+                    break;
             }
         }
 
-        /// <summary>Проверка доступа по указазанному пути к файлу/папке.</summary>
-        /// <param name="path">Путь к файлу/папке.</param>
-        /// <returns>true/false - доступен/недоступен</returns>
-        public static bool Availability(string path)
+        /// <summary>Создать папку.</summary>
+        /// <param name="path">Путь к родительской директории.</param>
+        internal static void CreatingDirectory(string newDirName, string rootDirPath)
         {
-            FileIOPermission f2 = new FileIOPermission(FileIOPermissionAccess.Read, path);
-            f2.AddPathList(FileIOPermissionAccess.Write | FileIOPermissionAccess.Read, path);
-            try
+            DirectoryInfo directoryInfo = new DirectoryInfo(rootDirPath);
+
+            if (!directoryInfo.Exists)
+                directoryInfo.Create();
+
+            directoryInfo.CreateSubdirectory(newDirName);
+        }
+
+        /// <summary>Переименовать файл/папку.</summary>
+        /// <param name="newName">Новое имя.</param>
+        /// <param name="oldName">Старое имя.</param>
+        internal static void Renaming(string newName, string oldName)
+        {
+            string newFullName = oldName.Substring(0, oldName.LastIndexOf('\\')) + newName;
+
+            if (File.Exists(newFullName))
             {
-                f2.Demand();
-                return true;
-            }
-            catch (SecurityException s)
-            {
-                Console.WriteLine(s.Message);
-                return false;
+                //сообщение об ошибке - файл с таким именем уже существует.
+                return;
             }
 
-            //if (File.Exists(path))
-            //    return true;    //если файл
-            //else if (Directory.Exists(path))
-            //    return true;    //если папка
-            //else
-            //    return false;
+            if (Exists(oldName) == FileType.File)
+            {
+                string[] splitStr = oldName.Split(new char[] { '.' });
+                string fileFormat = splitStr[splitStr.Length - 1];
+                File.Move(oldName, newFullName + fileFormat);
+            }
+            else if (Exists(oldName) == FileType.Directory)
+            {
+                File.Move(oldName, newFullName);
+            }
+        }
+
+        /// <summary>Проверка наличия файла/папки.</summary>
+        /// <param name="path">Путь к файлу/папке.</param>
+        /// <returns></returns>
+        static FileType Exists(string path)
+        {
+            if (File.Exists(path))
+                return FileType.File;    //если файл
+            else if (Directory.Exists(path))
+                return FileType.Directory;    //если папка
+            else
+                return FileType.NotFound;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace ConsoleFileManager.View
     {
         //private Controller _controller;
         private Command[] _buttons;     //массив команд (индекс = номер команды)
+        private string _paramString;    //строка вводимых пользователем параметров.
 
         /// <summary>Установить команду в соответствии с номером.</summary>
         /// <param name="number">Номер команды.</param>
@@ -37,7 +38,7 @@ namespace ConsoleFileManager.View
                     switch (userKey.Key)
                     {
                         case ConsoleKey.Tab:
-                            PressButton(0); //ChangeActivePanel();
+                            PressButton(0); //вызов ChangeActivePanel();
                             break;
                         case ConsoleKey.Enter:
                             PressButton(1); //ChangeDirectoryOrRunProcess();
@@ -55,13 +56,13 @@ namespace ConsoleFileManager.View
                             PressButton(5); //Move();
                             break;
                         case ConsoleKey.F7:
-                            PressButton(6); //CreateDirectory();
+                            PressButton(6, ReadParamString()); //CreateDirectory();
                             break;
                         case ConsoleKey.F8:
-                            PressButton(7); //Rename();
+                            PressButton(7, ReadParamString()); //Rename();
                             break;
                         case ConsoleKey.F9:
-                            PressButton(8); //Delete();
+                            if(Confirmation()) PressButton(8); //вызов Delete();
                             break;
                         case ConsoleKey.F10:
                             exit = true;
@@ -86,6 +87,34 @@ namespace ConsoleFileManager.View
                     }
                 }
             }
+        }
+
+        /// <summary>Запрос на подтверждение действия.</summary>
+        /// <returns>true/false - подтверждение/отмена.</returns>
+        private static bool Confirmation()
+        {
+            while (true)
+            {
+                Console.WriteLine("вы уверены? Y/N");
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo userKey = Console.ReadKey(true);
+                    switch (userKey.Key)
+                    {
+                        case ConsoleKey.N:
+                            return true;
+                        case ConsoleKey.Y:
+                            return false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>Считать строку вводимых пользователем параметров.</summary>
+        /// <returns>Параметр.</returns>
+        private string ReadParamString()
+        {
+            return "";
         }
     }
 }

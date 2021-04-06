@@ -29,6 +29,7 @@ namespace ConsoleFileManager.Models
             List<string> fileInfo = new List<string>();
             fileInfo.Add(_fileName);
             fileInfo.Add(_filePath);
+            fileInfo.Add(_isFolder.ToString());
 
             return fileInfo;
         }

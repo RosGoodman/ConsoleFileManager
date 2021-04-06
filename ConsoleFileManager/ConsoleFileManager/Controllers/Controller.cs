@@ -19,6 +19,8 @@ namespace ConsoleFileManager.Controls
             SettingsControl = new Settings(); //загружаем настройки
         }
 
+        #region SelectedFileInfo
+
         /// <summary>Получить информацию о файле.</summary>
         /// <returns>Информация построчно.</returns>
         public List<string> GetSelectedFileInfo()
@@ -40,6 +42,8 @@ namespace ConsoleFileManager.Controls
             return fileInfo;
         }
 
+        #endregion
+
         #region SettingsControl interface
 
         /// <summary>Установить новое значение параметра.</summary>
@@ -56,11 +60,47 @@ namespace ConsoleFileManager.Controls
 
         #endregion
 
+        #region commands
+
         /// <summary>Удалить файл.</summary>
         /// <param name="filename">Имя удаляемого файла.</param>
         internal void DeletingFile(string filename)
         {
             WorkWithFiles.DeletingFile(filename);
         }
+
+        /// <summary>Создать папку.</summary>
+        /// <param name="newDirName">Имя создаваемой папки.</param>
+        internal void CreateDirectory(string newDirName)
+        {
+            string isFolder = _selectedFile.GetFileInfo()[2];
+            if (isFolder == "True")
+            {
+                WorkWithFiles.CreatingDirectory(newDirName, GetRootFolder());
+            }
+            else
+            {
+                //сообщение об ошибке - выбран файл, а не папка
+            }
+        }
+
+        /// <summary>Переименовать выбранный файл/папку.</summary>
+        /// <param name="newName">Новое имя файла.</param>
+        internal void Rename(string newName)
+        {
+            string oldName = _selectedFile.GetFileInfo()[1];
+            WorkWithFiles.Renaming(newName, oldName);
+        }
+
+        /// <summary>Получить корневую папку текущего выбранного файла.</summary>
+        /// <returns>Путь к корневой папке.</returns>
+        private string GetRootFolder()
+        {
+            string selectedFilePath = _selectedFile.GetFileInfo()[1];
+            string rootPath = selectedFilePath.Substring(0, selectedFilePath.LastIndexOf('\\'));
+            return rootPath;
+        }
+
+        #endregion
     }
 }
