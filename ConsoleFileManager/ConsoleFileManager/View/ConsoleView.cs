@@ -1,26 +1,26 @@
 ﻿
 using ConsoleFileManager.Controllers.Commands;
-using ConsoleFileManager.Controls;
 using System;
 
 namespace ConsoleFileManager.View
 {
     public class ConsoleView
     {
-        private Controller _controller;
-        private Command[] _buttons;
+        //private Controller _controller;
+        private Command[] _buttons;     //массив команд (индекс = номер команды)
 
-        enum buttons
-        {
-            del
-        }
-
+        /// <summary>Установить команду в соответствии с номером.</summary>
+        /// <param name="number">Номер команды.</param>
+        /// <param name="com">Команда.</param>
         public void SetCommand(int number, Command com)
         {
             _buttons[number] = com;
         }
 
-        private void PressButton(int number, string param)
+        /// <summary>Вызов комады.</summary>
+        /// <param name="number">Номер команды.</param>
+        /// <param name="param">Параметр команды (если есть).</param>
+        private void PressButton(int number, string param = "")
         {
             _buttons[number].Execute(param);
         }
@@ -37,31 +37,31 @@ namespace ConsoleFileManager.View
                     switch (userKey.Key)
                     {
                         case ConsoleKey.Tab:
-                            //this.ChangeActivePanel();
+                            PressButton(0); //ChangeActivePanel();
                             break;
                         case ConsoleKey.Enter:
-                            //this.ChangeDirectoryOrRunProcess();
+                            PressButton(1); //ChangeDirectoryOrRunProcess();
                             break;
                         case ConsoleKey.F3:
-                            //this.ViewFile();
+                            PressButton(2); //ViewFile();
                             break;
                         case ConsoleKey.F4:
-                            //this.FindFile();
+                            PressButton(3); //FindFile();
                             break;
                         case ConsoleKey.F5:
-                            //this.Copy();
+                            PressButton(4); //Copy();
                             break;
                         case ConsoleKey.F6:
-                            //this.Move();
+                            PressButton(5); //Move();
                             break;
                         case ConsoleKey.F7:
-                            //this.CreateDirectory();
+                            PressButton(6); //CreateDirectory();
                             break;
                         case ConsoleKey.F8:
-                            //this.Rename();
+                            PressButton(7); //Rename();
                             break;
                         case ConsoleKey.F9:
-                            //this.Delete();
+                            PressButton(8); //Delete();
                             break;
                         case ConsoleKey.F10:
                             exit = true;
@@ -79,7 +79,7 @@ namespace ConsoleFileManager.View
                         case ConsoleKey.PageDown:
                             goto case ConsoleKey.PageUp;
                         case ConsoleKey.PageUp:
-                            //this.KeyPress(userKey);
+                            PressButton(9); //KeyPress(userKey);
                             break;
                         default:
                             break;

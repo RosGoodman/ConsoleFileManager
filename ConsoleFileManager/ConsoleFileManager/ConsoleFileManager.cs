@@ -1,36 +1,29 @@
 ﻿
 using ConsoleFileManager.Controllers.Commands;
+using ConsoleFileManager.Controllers.Services;
 using ConsoleFileManager.Controls;
 using ConsoleFileManager.View;
 using System;
+using System.IO;
+using System.Security.AccessControl;
+using System.Security.Permissions;
+using System.Security.Principal;
+using System.Text;
 
 namespace ConsoleFileManager
 {
 
     public class ConsoleFileManager
     {
-        /// <summary>Перечисление всех команд.</summary>
-        enum Commands
-        {
-            ChangeActivePanel,
-            ChangeDirectoryOrRunProcess,
-            ViewFile,
-            FindFile,
-            Copy,
-            Move,
-            CreateDirectory,
-            Rename,
-            Delete,
-            exit
-        }
-
         public static void Main()
         {
-            Controller controller = new Controller();
-            ConsoleView view = new ConsoleView();
+            WorkWithFiles.Availability(@"C:\ProgramData\Новая папка");
 
-            view.SetCommand(0, new DeleteCommand(controller));
-            view.Explore();
+            //Controller controller = new Controller();
+            //ConsoleView view = new ConsoleView();
+
+            //view.SetCommand(0, new DeleteCommand(controller));
+            //view.Explore();
         }
     }
 }
