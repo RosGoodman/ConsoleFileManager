@@ -1,14 +1,15 @@
 ﻿
 using ConsoleFileManager.Controllers.Commands;
 using System;
+using System.Collections.Generic;
 
 namespace ConsoleFileManager.View
 {
     public class ConsoleView
     {
         //private Controller _controller;
-        private Command[] _buttons;     //массив команд (индекс = номер команды)
-        private string _paramString;    //строка вводимых пользователем параметров.
+        private Dictionary<int, Command> _buttons = new Dictionary<int, Command>();     //словарь команд (номер/команда)
+        //private string _paramString;    //строка вводимых пользователем параметров.
 
         /// <summary>Установить команду в соответствии с номером.</summary>
         /// <param name="number">Номер команды.</param>
@@ -56,13 +57,13 @@ namespace ConsoleFileManager.View
                             PressButton(5); //Move();
                             break;
                         case ConsoleKey.F7:
-                            PressButton(6, ReadParamString()); //CreateDirectory();
+                            PressButton(6, ReadParamString()); //вызов CreateDirectory();
                             break;
                         case ConsoleKey.F8:
-                            PressButton(7, ReadParamString()); //Rename();
+                            PressButton(7, ReadParamString()); //вызов Rename();
                             break;
                         case ConsoleKey.F9:
-                            if(Confirmation()) PressButton(8); //вызов Delete();
+                            if(Confirmation()) PressButton(8, ReadParamString()); //вызов Delete();
                             break;
                         case ConsoleKey.F10:
                             exit = true;
@@ -93,18 +94,18 @@ namespace ConsoleFileManager.View
         /// <returns>true/false - подтверждение/отмена.</returns>
         private static bool Confirmation()
         {
+            Console.WriteLine("вы уверены? Y/N");
             while (true)
             {
-                Console.WriteLine("вы уверены? Y/N");
                 if (Console.KeyAvailable)
                 {
                     ConsoleKeyInfo userKey = Console.ReadKey(true);
                     switch (userKey.Key)
                     {
                         case ConsoleKey.N:
-                            return true;
-                        case ConsoleKey.Y:
                             return false;
+                        case ConsoleKey.Y:
+                            return true;
                     }
                 }
             }
@@ -114,7 +115,7 @@ namespace ConsoleFileManager.View
         /// <returns>Параметр.</returns>
         private string ReadParamString()
         {
-            return "";
+            return @"C:\Users\user069\Desktop\Паша\C#\Repo\Курсовая\ConsoleFileManager\ConsoleFileManager\test";
         }
     }
 }

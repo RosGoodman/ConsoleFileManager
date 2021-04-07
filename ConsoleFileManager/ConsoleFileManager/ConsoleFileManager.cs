@@ -13,7 +13,8 @@ namespace ConsoleFileManager
             Controller controller = new Controller();
             ConsoleView view = new ConsoleView();
 
-            view.SetCommand(0, new DeleteCommand(controller));
+            view.SetCommand(8, new DeleteCommand(controller));
+            view.SetCommand(6, new CreateDirectoryCommand(controller));
             view.Explore();
         }
     }

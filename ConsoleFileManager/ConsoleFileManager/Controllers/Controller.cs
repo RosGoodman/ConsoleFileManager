@@ -73,15 +73,7 @@ namespace ConsoleFileManager.Controls
         /// <param name="newDirName">Имя создаваемой папки.</param>
         internal void CreateDirectory(string newDirName)
         {
-            string isFolder = _selectedFile.GetFileInfo()[2];
-            if (isFolder == "True")
-            {
-                WorkWithFiles.CreatingDirectory(newDirName, GetRootFolder());
-            }
-            else
-            {
-                //сообщение об ошибке - выбран файл, а не папка
-            }
+            WorkWithFiles.CreatingDirectory(newDirName, GetRootFolder());
         }
 
         /// <summary>Переименовать выбранный файл/папку.</summary>
