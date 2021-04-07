@@ -9,14 +9,27 @@ namespace ConsoleFileManager.Controllers.Settings
     /// <summary>Класс описывающий действия с настройками.</summary>
     internal class Settings
     {
-        private string _settingsFileName = "Settins.json";  //имя файла с настройками
+        private string _settingsFileName = "Settings.json";  //имя файла с настройками
         private List<PropertyBase> _propList = new List<PropertyBase>();  //список экземпляров классов
         private Dictionary<string, string> _settings;    //настройки программы (параметр\значение). Для сериадизации.
 
+        /// <summary>Список экземпляров настроек.</summary>
         internal List<PropertyBase> PropList
         {
             get => _propList;
             set { _propList = value; }
+        }
+
+        /// <summary>Получить путь к последней папке.</summary>
+        /// <returns>Путь к папке.</returns>
+        internal string GetLastPath()
+        {
+            foreach(PropertyBase prop in _propList)
+            {
+                if (prop.propName == "LastPath")
+                    return prop.propValue;
+            }
+            return string.Empty;
         }
 
         public Settings()
@@ -74,6 +87,9 @@ namespace ConsoleFileManager.Controllers.Settings
     }
 
     #region Properties
+    ///////////////////////////////////////
+    ///описание методов в базовом классе///
+    ///////////////////////////////////////
 
     /// <summary>Путь последней открытой директории.</summary>
     internal class LastPathProperty : PropertyBase

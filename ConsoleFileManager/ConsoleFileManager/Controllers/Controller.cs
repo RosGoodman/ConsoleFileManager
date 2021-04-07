@@ -12,11 +12,26 @@ namespace ConsoleFileManager.Controls
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
 
+        public FileModel SelectedFile
+        {
+            get => _selectedFile;
+            set
+            {
+                _selectedFile = value;
+                //событие изменения выделенного файла
+            }
+        }
+
         private Settings SettingsControl { get; set; } //свойство для доступа к настройкам
 
         public Controller()
         {
             SettingsControl = new Settings(); //загружаем настройки
+            string lastPath = SettingsControl.GetLastPath();    //последний путь из настроек
+            string[] filesInDir = WorkWithFilesAndDir.GetAllFilesInDir(lastPath);   //список файлов по указанному пути
+
+            _mainListFiles = new FileListModel(filesInDir);
+            _selectedFile = _mainListFiles.GetFiles()[0];   //устанавливаем выделение на 1 файле
         }
 
         #region SelectedFileInfo
@@ -66,32 +81,37 @@ namespace ConsoleFileManager.Controls
         /// <param name="filename">Имя удаляемого файла.</param>
         internal void DeletingFile(string filename)
         {
-            WorkWithFiles.DeletingFile(filename);
+            WorkWithFilesAndDir.DeletingFile(filename);
         }
 
         /// <summary>Создать папку.</summary>
         /// <param name="newDirName">Имя создаваемой папки.</param>
         internal void CreateDirectory(string newDirName)
         {
-            WorkWithFiles.CreatingDirectory(newDirName, GetRootFolder());
+            WorkWithFilesAndDir.CreatingDirectory(newDirName);
         }
 
         /// <summary>Переименовать выбранный файл/папку.</summary>
         /// <param name="newName">Новое имя файла.</param>
         internal void Rename(string newName)
         {
-            string oldName = _selectedFile.GetFileInfo()[1];
-            WorkWithFiles.Renaming(newName, oldName);
+            //TODO: заглушка
+            //string oldName = _selectedFile.GetFileInfo()[1];
+            string oldName = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\test";
+            WorkWithFilesAndDir.Renaming(newName, oldName);
         }
 
-        /// <summary>Получить корневую папку текущего выбранного файла.</summary>
-        /// <returns>Путь к корневой папке.</returns>
-        private string GetRootFolder()
-        {
-            string selectedFilePath = _selectedFile.GetFileInfo()[1];
-            string rootPath = selectedFilePath.Substring(0, selectedFilePath.LastIndexOf('\\'));
-            return rootPath;
-        }
+        ///// <summary>Получить корневую папку текущего выбранного файла.</summary>
+        ///// <returns>Путь к корневой папке.</returns>
+        //private string GetRootFolder()
+        //{
+        //    //TODO: заглушка, пока не дописано выделение строки.
+
+        //    //string selectedFilePath = _selectedFile.GetFileInfo()[1];
+        //    //string rootPath = selectedFilePath.Substring(0, selectedFilePath.LastIndexOf('\\'));
+        //    string rootPath = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager";
+        //    return rootPath;
+        //}
 
         #endregion
     }

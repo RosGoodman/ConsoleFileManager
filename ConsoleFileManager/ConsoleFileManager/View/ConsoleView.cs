@@ -39,31 +39,31 @@ namespace ConsoleFileManager.View
                     switch (userKey.Key)
                     {
                         case ConsoleKey.Tab:
-                            PressButton(0); //вызов ChangeActivePanel();
+                            PressButton(0); //вызов ChangeActivePanelCommand();
                             break;
                         case ConsoleKey.Enter:
-                            PressButton(1); //ChangeDirectoryOrRunProcess();
+                            PressButton(1); //ChangeDirectoryOrRunProcessCommand();
                             break;
                         case ConsoleKey.F3:
-                            PressButton(2); //ViewFile();
+                            PressButton(2); //ViewFileCommand();
                             break;
                         case ConsoleKey.F4:
-                            PressButton(3); //FindFile();
+                            PressButton(3); //FindFileCommand();
                             break;
                         case ConsoleKey.F5:
-                            PressButton(4); //Copy();
+                            PressButton(4); //CopyCommand();
                             break;
                         case ConsoleKey.F6:
-                            PressButton(5); //Move();
+                            PressButton(5); //MoveCommand();
                             break;
                         case ConsoleKey.F7:
-                            PressButton(6, ReadParamString()); //вызов CreateDirectory();
+                            PressButton(6, ReadParamString()); //CreateDirectoryCommand();
                             break;
                         case ConsoleKey.F8:
-                            PressButton(7, ReadParamString()); //вызов Rename();
+                            PressButton(7, ReadParamString()); //RenameCommand();
                             break;
                         case ConsoleKey.F9:
-                            if(Confirmation()) PressButton(8, ReadParamString()); //вызов Delete();
+                            if(Confirmation()) PressButton(8, ReadParamString()); //DeleteCommand();
                             break;
                         case ConsoleKey.F10:
                             exit = true;
@@ -115,7 +115,8 @@ namespace ConsoleFileManager.View
         /// <returns>Параметр.</returns>
         private string ReadParamString()
         {
-            return @"C:\Users\user069\Desktop\Паша\C#\Repo\Курсовая\ConsoleFileManager\ConsoleFileManager\test";
+            //TODO: дописать метод. пока заглушка
+            return "test2";
         }
     }
 }

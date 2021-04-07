@@ -4,7 +4,7 @@ using System.IO;
 namespace ConsoleFileManager.Controllers.Services
 {
     /// <summary>Класс описывающий работу с файлами и папками.</summary>
-    public class WorkWithFiles
+    public class WorkWithFilesAndDir
     {
         private enum FileType
         {
@@ -33,15 +33,13 @@ namespace ConsoleFileManager.Controllers.Services
         }
 
         /// <summary>Создать папку.</summary>
-        /// <param name="path">Путь к родительской директории.</param>
-        internal static void CreatingDirectory(string newDirName, string rootDirPath)
+        /// <param name="newDirName">Имя новой папки.</param>
+        internal static void CreatingDirectory(string newDirName)
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(rootDirPath);
+            DirectoryInfo directoryInfo = new DirectoryInfo(newDirName);
 
             if (!directoryInfo.Exists)
                 directoryInfo.Create();
-
-            directoryInfo.CreateSubdirectory(newDirName);
         }
 
         /// <summary>Переименовать файл/папку.</summary>
@@ -49,7 +47,7 @@ namespace ConsoleFileManager.Controllers.Services
         /// <param name="oldName">Старое имя.</param>
         internal static void Renaming(string newName, string oldName)
         {
-            string newFullName = oldName.Substring(0, oldName.LastIndexOf('\\')) + newName;
+            string newFullName = oldName.Substring(0, oldName.LastIndexOf('\\')) + "\\" + newName;
 
             if (File.Exists(newFullName))
             {
@@ -65,7 +63,7 @@ namespace ConsoleFileManager.Controllers.Services
             }
             else if (Exists(oldName) == FileType.Directory)
             {
-                File.Move(oldName, newFullName);
+                Directory.Move(oldName, newFullName);
             }
         }
 
@@ -80,6 +78,16 @@ namespace ConsoleFileManager.Controllers.Services
                 return FileType.Directory;    //если папка
             else
                 return FileType.NotFound;
+        }
+
+        /// <summary>Получить список всех файлов указанной директории.</summary>
+        /// <param name="directory">Рассматриваемая директория.</param>
+        /// <returns>Массив всех файлов.</returns>
+        internal static string[] GetAllFilesInDir(string directory)
+        {
+            string[] entries = Directory.GetFileSystemEntries(directory, "*", SearchOption.AllDirectories);
+
+            return entries;
         }
     }
 }
