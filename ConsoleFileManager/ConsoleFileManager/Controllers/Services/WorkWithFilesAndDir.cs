@@ -49,21 +49,29 @@ namespace ConsoleFileManager.Controllers.Services
         {
             string newFullName = oldName.Substring(0, oldName.LastIndexOf('\\')) + "\\" + newName;
 
-            if (File.Exists(newFullName))
+            Moving(newFullName, oldName);
+        }
+
+        /// <summary>Изменить путь к файлу.</summary>
+        /// <param name="newPath">Новый путь.</param>
+        /// <param name="currentPath">Текущий путь.</param>
+        internal static void Moving(string newPath, string currentPath)
+        {
+            if (File.Exists(newPath))
             {
                 //сообщение об ошибке - файл с таким именем уже существует.
                 return;
             }
 
-            if (Exists(oldName) == FileType.File)
+            if (Exists(currentPath) == FileType.File)
             {
-                string[] splitStr = oldName.Split(new char[] { '.' });
+                string[] splitStr = currentPath.Split(new char[] { '.' });
                 string fileFormat = splitStr[splitStr.Length - 1];
-                File.Move(oldName, newFullName + fileFormat);
+                File.Move(currentPath, newPath + fileFormat);
             }
-            else if (Exists(oldName) == FileType.Directory)
+            else if (Exists(currentPath) == FileType.Directory)
             {
-                Directory.Move(oldName, newFullName);
+                Directory.Move(currentPath, newPath);
             }
         }
 
@@ -85,9 +93,8 @@ namespace ConsoleFileManager.Controllers.Services
         /// <returns>Массив всех файлов.</returns>
         internal static string[] GetAllFilesInDir(string directory)
         {
-            string[] entries = Directory.GetFileSystemEntries(directory, "*", SearchOption.AllDirectories);
-
-            return entries;
+            string[] files = Directory.GetFiles(directory);
+            return files;
         }
     }
 }

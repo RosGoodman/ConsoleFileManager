@@ -54,7 +54,7 @@ namespace ConsoleFileManager.View
                             PressButton(4); //CopyCommand();
                             break;
                         case ConsoleKey.F6:
-                            PressButton(5); //MoveCommand();
+                            PressButton(5, ReadParamString()); //MoveCommand();
                             break;
                         case ConsoleKey.F7:
                             PressButton(6, ReadParamString()); //CreateDirectoryCommand();

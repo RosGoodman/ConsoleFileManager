@@ -12,13 +12,17 @@ namespace ConsoleFileManager.Controls
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
 
+        public delegate void ChangeSelectedFileHandler(FileModel selectedFile);
+        public event ChangeSelectedFileHandler Notify;  //определение события изменения выделенного элемента
+
+        /// <summary>Выделенный элемент.</summary>
         public FileModel SelectedFile
         {
             get => _selectedFile;
             set
             {
                 _selectedFile = value;
-                //событие изменения выделенного файла
+                Notify?.Invoke(_selectedFile);  //вызов события
             }
         }
 
@@ -97,8 +101,18 @@ namespace ConsoleFileManager.Controls
         {
             //TODO: заглушка
             //string oldName = _selectedFile.GetFileInfo()[1];
-            string oldName = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\test";
-            WorkWithFilesAndDir.Renaming(newName, oldName);
+            string currnetPath = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\test";
+            WorkWithFilesAndDir.Renaming(newName, currnetPath);
+        }
+
+        /// <summary>Переместить выделенный элемент в указанную директорию.</summary>
+        /// <param name="newPath">Директория вставки.</param>
+        internal void Move(string newPath)
+        {
+            string currnetPath = _selectedFile.GetFileInfo()[1];
+            string currnetPath = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\test";
+            //TODO: проверить получаемые в метод пути
+            WorkWithFilesAndDir.Moving(newPath, currnetPath);
         }
 
         ///// <summary>Получить корневую папку текущего выбранного файла.</summary>

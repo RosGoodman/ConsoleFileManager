@@ -38,4 +38,16 @@ namespace ConsoleFileManager.Controllers.Commands
 
         public override void Undo() => throw new System.NotImplementedException();
     }
+
+    /// <summary>Команда перемещения файла/папки в указанную директорию.</summary>
+    internal class MoveCommand : Command
+    {
+        private Controller _resiver;
+
+        public MoveCommand(Controller r) => _resiver = r;
+
+        public override void Execute(string newPath) => _resiver.Move(newPath);
+
+        public override void Undo() => throw new System.NotImplementedException();
+    }
 }

@@ -4,7 +4,7 @@ namespace ConsoleFileManager.Models
 {
     internal class FileListModel
     {
-        private List<FileModel> _fileList;  //список файлов в директории.
+        private List<FileModel> _fileList = new List<FileModel>();  //список файлов в директории.
 
         public FileListModel(string[] entries)
         {

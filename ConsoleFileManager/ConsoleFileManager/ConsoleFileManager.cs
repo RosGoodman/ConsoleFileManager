@@ -5,7 +5,7 @@ using ConsoleFileManager.View;
 
 namespace ConsoleFileManager
 {
-
+    /// <summary>Класс инициализатор программы.</summary>
     public class ConsoleFileManager
     {
         public static void Main()
@@ -16,6 +16,8 @@ namespace ConsoleFileManager
             view.SetCommand(8, new DeleteCommand(controller));
             view.SetCommand(6, new CreateDirectoryCommand(controller));
             view.SetCommand(7, new RenameCommand(controller));
+            view.SetCommand(5, new MoveCommand(controller));
+
             view.Explore();
         }
     }

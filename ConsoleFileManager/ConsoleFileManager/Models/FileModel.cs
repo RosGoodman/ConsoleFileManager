@@ -5,7 +5,7 @@ using System.IO;
 namespace ConsoleFileManager.Models
 {
     /// <summary>Класс описывающий модель файлов и папок.</summary>
-    internal class FileModel
+    public class FileModel
     {
         private string _fileName = string.Empty;
         private string _filePath = string.Empty;
