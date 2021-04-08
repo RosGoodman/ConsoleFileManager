@@ -8,7 +8,7 @@ namespace ConsoleFileManager.Controls
 {
     public class Controller
     {
-        private FileModel _selectedFile;    //выделенный файл
+        private FileModel _selectedFile;        //выделенный файл
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
 
@@ -21,8 +21,11 @@ namespace ConsoleFileManager.Controls
             get => _selectedFile;
             set
             {
-                _selectedFile = value;
-                Notify?.Invoke(_selectedFile);  //вызов события
+                if(_selectedFile != value)
+                {
+                    _selectedFile = value;
+                    Notify?.Invoke(_selectedFile);  //вызов события
+                }
             }
         }
 
@@ -30,7 +33,7 @@ namespace ConsoleFileManager.Controls
 
         public Controller()
         {
-            SettingsControl = new Settings(); //загружаем настройки
+            SettingsControl = new Settings();   //загружаем настройки
             string lastPath = SettingsControl.GetLastPath();    //последний путь из настроек
             string[] filesInDir = WorkWithFilesAndDir.GetAllFilesInDir(lastPath);   //список файлов по указанному пути
 
@@ -110,22 +113,10 @@ namespace ConsoleFileManager.Controls
         internal void Move(string newPath)
         {
             string currnetPath = _selectedFile.GetFileInfo()[1];
-            string currnetPath = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\test";
+            currnetPath = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\test";
             //TODO: проверить получаемые в метод пути
             WorkWithFilesAndDir.Moving(newPath, currnetPath);
         }
-
-        ///// <summary>Получить корневую папку текущего выбранного файла.</summary>
-        ///// <returns>Путь к корневой папке.</returns>
-        //private string GetRootFolder()
-        //{
-        //    //TODO: заглушка, пока не дописано выделение строки.
-
-        //    //string selectedFilePath = _selectedFile.GetFileInfo()[1];
-        //    //string rootPath = selectedFilePath.Substring(0, selectedFilePath.LastIndexOf('\\'));
-        //    string rootPath = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager";
-        //    return rootPath;
-        //}
 
         #endregion
     }

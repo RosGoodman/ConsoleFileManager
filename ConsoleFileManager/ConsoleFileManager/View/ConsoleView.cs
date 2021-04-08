@@ -1,5 +1,7 @@
 ﻿
 using ConsoleFileManager.Controllers.Commands;
+using ConsoleFileManager.Controls;
+using ConsoleFileManager.Models;
 using System;
 using System.Collections.Generic;
 
@@ -7,9 +9,14 @@ namespace ConsoleFileManager.View
 {
     public class ConsoleView
     {
-        //private Controller _controller;
         private Dictionary<int, Command> _buttons = new Dictionary<int, Command>();     //словарь команд (номер/команда)
-        //private string _paramString;    //строка вводимых пользователем параметров.
+        private Controller _controller;  //хранится для обработчика события
+
+        public ConsoleView(Controller controller)
+        {
+            controller = _controller;
+            controller.Notify += ChangeSelectFile;
+        }
 
         /// <summary>Установить команду в соответствии с номером.</summary>
         /// <param name="number">Номер команды.</param>
@@ -30,6 +37,7 @@ namespace ConsoleFileManager.View
         /// <summary>Обработка нажатия клавиш.</summary>
         public void Explore()
         {
+            int numbCommand = 1;    //номер команды, записывается командами ожидающими нажатия enter
             bool exit = false;
             while (!exit)
             {
@@ -42,7 +50,8 @@ namespace ConsoleFileManager.View
                             PressButton(0); //вызов ChangeActivePanelCommand();
                             break;
                         case ConsoleKey.Enter:
-                            PressButton(1); //ChangeDirectoryOrRunProcessCommand();
+                            PressButton(numbCommand, ReadParamString()); //ChangeDirectoryOrRunProcessCommand();
+                            numbCommand = 1;
                             break;
                         case ConsoleKey.F3:
                             PressButton(2); //ViewFileCommand();
@@ -54,13 +63,13 @@ namespace ConsoleFileManager.View
                             PressButton(4); //CopyCommand();
                             break;
                         case ConsoleKey.F6:
-                            PressButton(5, ReadParamString()); //MoveCommand();
+                            numbCommand = 5; //MoveCommand();
                             break;
                         case ConsoleKey.F7:
-                            PressButton(6, ReadParamString()); //CreateDirectoryCommand();
+                            numbCommand = 6; //CreateDirectoryCommand();
                             break;
                         case ConsoleKey.F8:
-                            PressButton(7, ReadParamString()); //RenameCommand();
+                            numbCommand = 7; //RenameCommand();
                             break;
                         case ConsoleKey.F9:
                             if(Confirmation()) PressButton(8, ReadParamString()); //DeleteCommand();
@@ -90,6 +99,13 @@ namespace ConsoleFileManager.View
             }
         }
 
+        /// <summary>Изменение выделенного файла.</summary>
+        /// <param name="file">Новый выделенный файл.</param>
+        private static void ChangeSelectFile(FileModel file)
+        {
+            Console.WriteLine(file.FilePath);
+        }
+
         /// <summary>Запрос на подтверждение действия.</summary>
         /// <returns>true/false - подтверждение/отмена.</returns>
         private static bool Confirmation()
@@ -115,8 +131,8 @@ namespace ConsoleFileManager.View
         /// <returns>Параметр.</returns>
         private string ReadParamString()
         {
-            //TODO: дописать метод. пока заглушка
-            return "test2";
+            string commandParam = Console.ReadLine();
+            return commandParam;
         }
     }
 }
