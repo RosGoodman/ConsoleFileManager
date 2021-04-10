@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using System.IO;
 
 namespace ConsoleFileManager.Controllers.Services
@@ -91,10 +92,27 @@ namespace ConsoleFileManager.Controllers.Services
         /// <summary>Получить список всех файлов указанной директории.</summary>
         /// <param name="directory">Рассматриваемая директория.</param>
         /// <returns>Массив всех файлов.</returns>
-        internal static string[] GetAllFilesInDir(string directory)
+        internal static List<string> GetAllFilesInDir(string directory)
         {
+            string[] dir = Directory.GetDirectories(directory);
             string[] files = Directory.GetFiles(directory);
-            return files;
+            List<string> filesAndDir = new List<string>();
+
+            AddInList(filesAndDir, dir);
+            AddInList(filesAndDir, files);
+
+            return filesAndDir;
+        }
+
+        /// <summary>Добавить массив в список.</summary>
+        /// <param name="list">Список для добавления.</param>
+        /// <param name="addedArr">Добавляемый массив.</param>
+        private static void AddInList(List<string> list, string[] addedArr)
+        {
+            for (int i = 0; i < addedArr.Length; i++)
+            {
+                list.Add(addedArr[i]);
+            }
         }
     }
 }

@@ -2,11 +2,11 @@
 
 namespace ConsoleFileManager.Models
 {
-    internal class FileListModel
+    public class FileListModel
     {
         private List<FileModel> _fileList = new List<FileModel>();  //список файлов в директории.
 
-        public FileListModel(string[] entries)
+        public FileListModel(List<string> entries)
         {
             AddFilesInList(entries);
         }
@@ -14,12 +14,12 @@ namespace ConsoleFileManager.Models
 
         /// <summary>Создать экземпляры модели файлов и внести в список.</summary>
         /// <param name="entries">Массив файлов в директории.</param>
-        private void AddFilesInList(string[] entries)
+        private void AddFilesInList(List<string> entries)
         {
             FileModel fileModel;
-            for (int i = 0; i < entries.Length; i++)
+            foreach(string file in entries)
             {
-                fileModel = new FileModel(entries[i]);
+                fileModel = new FileModel(file);
                 _fileList.Add(fileModel);
             }
         }

@@ -20,6 +20,8 @@ namespace ConsoleFileManager.Models
 
             if (Directory.Exists(filePath)) //папка\не папка.
                 _isFolder = true;
+
+            SetFileName();
         }
 
         /// <summary>Получить данные файла.</summary>
@@ -32,6 +34,26 @@ namespace ConsoleFileManager.Models
             fileInfo.Add(_isFolder.ToString());
 
             return fileInfo;
+        }
+
+        /// <summary>Задать имя файла/директории.</summary>
+        private void SetFileName()
+        {
+            if (_isFolder)
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(_filePath);
+                _fileName = directoryInfo.Name;
+            }
+            else
+            {
+                FileInfo fileInfo = new FileInfo(_filePath);
+                _fileName = fileInfo.Name;
+            }
+        }
+
+        public override string ToString()
+        {
+            return _fileName;
         }
     }
 }

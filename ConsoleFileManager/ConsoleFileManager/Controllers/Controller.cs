@@ -13,7 +13,15 @@ namespace ConsoleFileManager.Controls
         private FileListModel _subListFiles;    //список файлов 2 уровня
 
         public delegate void ChangeSelectedFileHandler(FileModel selectedFile);
-        public event ChangeSelectedFileHandler Notify;  //определение события изменения выделенного элемента
+        public event ChangeSelectedFileHandler Notify;          //определение события изменения выделенного элемента
+
+        public delegate void ChangeMainListFiles(FileListModel mainMainListFiles);
+        public event ChangeMainListFiles changeMainListNotify;  //определение события измененния списка файлов 1 уровня
+
+        public delegate void ChangeSubListFiles(FileListModel subListFiles);
+        public event ChangeMainListFiles changeSubListNotify;   //определение события измененния списка файлов 2 уровня
+
+        #region Properties
 
         /// <summary>Выделенный элемент.</summary>
         public FileModel SelectedFile
@@ -29,16 +37,40 @@ namespace ConsoleFileManager.Controls
             }
         }
 
+        /// <summary>Отображаемый список файлов 1 уровня.</summary>
+        public FileListModel MainListFiles
+        {
+            get => _mainListFiles;
+            set
+            {
+                _mainListFiles = value;
+                changeMainListNotify?.Invoke(_mainListFiles);
+            }
+        }
+
+        /// <summary>Отображаемый список файлов 2 уровня.</summary>
+        public FileListModel SubListFiles
+        {
+            get => _subListFiles;
+            set
+            {
+                _subListFiles = value;
+                changeSubListNotify?.Invoke(_subListFiles);
+            }
+        }
+
         private Settings SettingsControl { get; set; } //свойство для доступа к настройкам
+
+        #endregion
 
         public Controller()
         {
             SettingsControl = new Settings();   //загружаем настройки
             string lastPath = SettingsControl.GetLastPath();    //последний путь из настроек
-            string[] filesInDir = WorkWithFilesAndDir.GetAllFilesInDir(lastPath);   //список файлов по указанному пути
+            List<string> filesInDir = WorkWithFilesAndDir.GetAllFilesInDir(lastPath);   //список файлов по указанному пути
 
-            _mainListFiles = new FileListModel(filesInDir);
-            _selectedFile = _mainListFiles.GetFiles()[0];   //устанавливаем выделение на 1 файле
+            MainListFiles = new FileListModel(filesInDir);
+            SelectedFile = _mainListFiles.GetFiles()[0];   //устанавливаем выделение на 1 файле
         }
 
         #region SelectedFileInfo

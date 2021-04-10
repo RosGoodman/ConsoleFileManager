@@ -14,8 +14,9 @@ namespace ConsoleFileManager.View
 
         public ConsoleView(Controller controller)
         {
-            controller = _controller;
+            _controller = controller;
             controller.Notify += ChangeSelectFile;
+            controller.changeMainListNotify += ChangeMainListFiles;
         }
 
         /// <summary>Установить команду в соответствии с номером.</summary>
@@ -104,6 +105,17 @@ namespace ConsoleFileManager.View
         private static void ChangeSelectFile(FileModel file)
         {
             Console.WriteLine(file.FilePath);
+        }
+
+        /// <summary>Изменение выводимого списка 1 уровня.</summary>
+        /// <param name="fileList">Новый список файлов/папок.</param>
+        private static void ChangeMainListFiles(FileListModel fileList)
+        {
+            List<FileModel> files = fileList.GetFiles();
+            foreach(FileModel file in files)
+            {
+                Console.WriteLine(file.ToString());
+            }
         }
 
         /// <summary>Запрос на подтверждение действия.</summary>
