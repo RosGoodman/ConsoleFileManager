@@ -17,6 +17,8 @@ namespace ConsoleFileManager
             view.SetCommand(6, new CreateDirectoryCommand(controller));
             view.SetCommand(7, new RenameCommand(controller));
             view.SetCommand(5, new MoveCommand(controller));
+            view.SetCommand(10, new SelectTheLowerOneCommand(controller));
+            view.SetCommand(11, new SelectTheTopOneCommand(controller));
 
             view.Explore();
         }

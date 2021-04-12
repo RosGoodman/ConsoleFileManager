@@ -42,11 +42,35 @@ namespace ConsoleFileManager.Controllers.Commands
     /// <summary>Команда перемещения файла/папки в указанную директорию.</summary>
     internal class MoveCommand : Command
     {
-        private Controller _resiver;
+        private Controller _reseiver;
 
-        public MoveCommand(Controller r) => _resiver = r;
+        public MoveCommand(Controller r) => _reseiver = r;
 
-        public override void Execute(string newPath) => _resiver.Move(newPath);
+        public override void Execute(string newPath) => _reseiver.Move(newPath);
+
+        public override void Undo() => throw new System.NotImplementedException();
+    }
+
+    /// <summary>Выделить файл выше по списку.</summary>
+    internal class SelectTheTopOneCommand : Command
+    {
+        private Controller _reseiver;
+
+        public SelectTheTopOneCommand(Controller r) => _reseiver = r;
+
+        public override void Execute(string b = "") => _reseiver.SelectTheTopOne();
+
+        public override void Undo() => throw new System.NotImplementedException();
+    }
+
+    /// <summary>Выделить файл ниже по списку.</summary>
+    internal class SelectTheLowerOneCommand : Command
+    {
+        private Controller _reseiver;
+
+        public SelectTheLowerOneCommand(Controller r) => _reseiver = r;
+
+        public override void Execute(string b = "") => _reseiver.SelectTheLowerOne();
 
         public override void Undo() => throw new System.NotImplementedException();
     }

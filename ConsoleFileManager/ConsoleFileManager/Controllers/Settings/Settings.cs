@@ -1,6 +1,7 @@
 ﻿
 using ConsoleFileManager.Controllers.Services;
 using ConsoleFileManager.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -20,6 +21,14 @@ namespace ConsoleFileManager.Controllers.Settings
             set { _propList = value; }
         }
 
+        public Settings()
+        {
+            _propList.Add(new LastPathProperty());
+            _propList.Add(new WindowWidthProperty());
+            _propList.Add(new WindowHeightProperty());
+            _propList.Add(new StringCountProperty());
+        }
+
         /// <summary>Получить путь к последней папке.</summary>
         /// <returns>Путь к папке.</returns>
         internal string GetLastPath()
@@ -32,13 +41,16 @@ namespace ConsoleFileManager.Controllers.Settings
             return string.Empty;
         }
 
-        public Settings()
+        /// <summary>Получить максимальное кол-во строк на странице.</summary>
+        /// <returns></returns>
+        internal int GetCountStrInPage()
         {
-            _propList.Add(new LastPathProperty());
-            _propList.Add(new WindowWidthProperty());
-            _propList.Add(new WindowHeightProperty());
-            _propList.Add(new StringCountProperty());
-            LoadSettings();
+            foreach(PropertyBase prop in _propList)
+            {
+                if (prop.propName == "StringCount")
+                    return Convert.ToInt32(prop.propValue);
+            }
+            return 40;
         }
 
         /// <summary>Изменить настройки.</summary>
@@ -61,7 +73,11 @@ namespace ConsoleFileManager.Controllers.Settings
         {
             _settings = JsonFile.ReadSettingsFromJson(_settingsFileName);   //загружаем из файла
 
-            if (_settings.Count == 0) return;
+            if (_settings.Count == 0)
+            {
+                SaveSettings(); //если файла с настройками еще нет - создаем
+                LoadSettings();
+            }
 
             foreach(PropertyBase prop in _propList) //присваиваем экземплярам
             {
@@ -87,6 +103,7 @@ namespace ConsoleFileManager.Controllers.Settings
     }
 
     #region Properties
+
     ///////////////////////////////////////
     ///описание методов в базовом классе///
     ///////////////////////////////////////

@@ -8,6 +8,8 @@ namespace ConsoleFileManager.Controls
 {
     public class Controller
     {
+        private Settings _settings = new Settings(); //инициализация класса настроек
+
         private FileModel _selectedFile;        //выделенный файл
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
@@ -16,10 +18,10 @@ namespace ConsoleFileManager.Controls
         public event ChangeSelectedFileHandler Notify;          //определение события изменения выделенного элемента
 
         public delegate void ChangeMainListFiles(FileListModel mainMainListFiles);
-        public event ChangeMainListFiles changeMainListNotify;  //определение события измененния списка файлов 1 уровня
+        public event ChangeMainListFiles ChangeMainListNotify;  //определение события измененния списка файлов 1 уровня
 
         public delegate void ChangeSubListFiles(FileListModel subListFiles);
-        public event ChangeMainListFiles changeSubListNotify;   //определение события измененния списка файлов 2 уровня
+        public event ChangeMainListFiles ChangeSubListNotify;   //определение события измененния списка файлов 2 уровня
 
         #region Properties
 
@@ -44,7 +46,8 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _mainListFiles = value;
-                changeMainListNotify?.Invoke(_mainListFiles);
+                ChangeMainListNotify?.Invoke(_mainListFiles);
+
             }
         }
 
@@ -55,23 +58,13 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _subListFiles = value;
-                changeSubListNotify?.Invoke(_subListFiles);
+                ChangeSubListNotify?.Invoke(_subListFiles);
             }
         }
 
         private Settings SettingsControl { get; set; } //свойство для доступа к настройкам
 
         #endregion
-
-        public Controller()
-        {
-            SettingsControl = new Settings();   //загружаем настройки
-            string lastPath = SettingsControl.GetLastPath();    //последний путь из настроек
-            List<string> filesInDir = WorkWithFilesAndDir.GetAllFilesInDir(lastPath);   //список файлов по указанному пути
-
-            MainListFiles = new FileListModel(filesInDir);
-            SelectedFile = _mainListFiles.GetFiles()[0];   //устанавливаем выделение на 1 файле
-        }
 
         #region SelectedFileInfo
 
@@ -104,13 +97,21 @@ namespace ConsoleFileManager.Controls
         /// <param name="settingName">Наименование параметра.</param>
         /// <param name="value">Новое значение параметра.</param>
         public void SetNewSettingValue(string settingName, string value)
-            => SettingsControl.ChangeProperty(settingName, value);
+            => _settings.ChangeProperty(settingName, value);
 
         /// <summary>Загрузить сохраненные настройки.</summary>
-        public void LoadSettings() => SettingsControl.LoadSettings();
+        public void LoadSettings()
+        {
+            _settings.LoadSettings();
+            string lastPath = _settings.GetLastPath();
+            List<string> filesInDir = WorkWithFilesAndDir.GetAllFilesInDir(lastPath);
+
+            MainListFiles = new FileListModel(filesInDir);
+            SelectedFile = _mainListFiles.GetFiles()[0];
+        }
 
         /// <summary>Сохранить настройки.</summary>
-        public void SaveSettings() => SettingsControl.SaveSettings();
+        public void SaveSettings() => _settings.SaveSettings();
 
         #endregion
 
@@ -150,6 +151,59 @@ namespace ConsoleFileManager.Controls
             WorkWithFilesAndDir.Moving(newPath, currnetPath);
         }
 
+        /// <summary>Выделить файл выше по списку.</summary>
+        internal void SelectTheTopOne()
+        {
+            ChangeSelectionFile(_mainListFiles, true, 1);
+        }
+
+        /// <summary>Выделить файл ниже по списку.</summary>
+        internal void SelectTheLowerOne()
+        {
+            ChangeSelectionFile(_mainListFiles, false, 1);
+        }
+
         #endregion
+
+        /// <summary>Изменить selectedFile в заданном направлении.</summary>
+        /// <param name="fileList">Просматриваемый список.</param>
+        /// <param name="directionUp">Направление движения по списку (true - вврх, false -вниз).</param>
+        /// <param name="numbMovementLines">Количество строк смещения выделения.</param>
+        /// <param name="numbStr">Номер строки родительской директории для списка 2 уровня.</param>
+        private void ChangeSelectionFile(FileListModel fileList, bool directionUp, int numbMovementLines, int numbStr = 0)
+        {
+            List<FileModel> subFileModels;
+            string root = string.Empty;
+            if (_subListFiles != null)   //получаем родительскую директорию списка 2 уровня
+            {
+                subFileModels = fileList.GetFiles();
+                FileInfo fileInfo = new FileInfo(subFileModels[0].FilePath);
+                root = fileInfo.Directory.Name;
+            }
+
+            List<FileModel> fileModels = fileList.GetFiles();
+            //проход по списку, если адрес папки совпадает
+            //с адресом списка 2 уровня - продолжаем в нем.
+            for (int i = 0; i < fileModels.Count; i++)
+            {
+                if (fileModels[i] == _selectedFile)
+                {
+                    if (directionUp && i >= numbMovementLines)   //вверх
+                    {
+                        SelectedFile = fileModels[i - numbMovementLines];
+                        break;
+                    }
+
+                    if(!directionUp && numbStr < _settings.GetCountStrInPage()-1 && numbStr < fileModels.Count) //вниз
+                    {
+                        SelectedFile = fileModels[i + 1];
+                        break;
+                        //TODO: добавить обработку случая с раскрытым список 2 уровня
+                    }
+                }
+
+                numbStr++;
+            }
+        }
     }
 }

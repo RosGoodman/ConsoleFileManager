@@ -10,13 +10,14 @@ namespace ConsoleFileManager.View
     public class ConsoleView
     {
         private Dictionary<int, Command> _buttons = new Dictionary<int, Command>();     //словарь команд (номер/команда)
-        private Controller _controller;  //хранится для обработчика события
+        //private Controller _controller;  //хранится для обработчика события
+        //private int _countFilesOnPage;  //кол-во файлов на странице
 
         public ConsoleView(Controller controller)
         {
-            _controller = controller;
             controller.Notify += ChangeSelectFile;
-            controller.changeMainListNotify += ChangeMainListFiles;
+            controller.ChangeMainListNotify += ChangeMainListFiles;
+            controller.LoadSettings();
         }
 
         /// <summary>Установить команду в соответствии с номером.</summary>
@@ -76,22 +77,28 @@ namespace ConsoleFileManager.View
                             if(Confirmation()) PressButton(8, ReadParamString()); //DeleteCommand();
                             break;
                         case ConsoleKey.F10:
+                            PressButton(9); //exitCommand
                             exit = true;
                             Console.ResetColor();
                             Console.Clear();
                             break;
                         case ConsoleKey.DownArrow:
-                            goto case ConsoleKey.PageUp;
+                            PressButton(10);    //SelectTheLowerOneCommand
+                            break;
                         case ConsoleKey.UpArrow:
-                            goto case ConsoleKey.PageUp;
+                            PressButton(11);    //SelectTheTopOneCommand
+                            break;
                         case ConsoleKey.End:
-                            goto case ConsoleKey.PageUp;
+                            PressButton(12);    //SelectingTheLastFileOnPageCommand
+                            break;
                         case ConsoleKey.Home:
-                            goto case ConsoleKey.PageUp;
+                            PressButton(13);    //SelectingTheFirstFileOnPageCommand
+                            break;
                         case ConsoleKey.PageDown:
-                            goto case ConsoleKey.PageUp;
+                            PressButton(14);    //NextPageCommand
+                            break;
                         case ConsoleKey.PageUp:
-                            PressButton(9); //KeyPress(userKey);
+                            PressButton(15);    //PreviousePageCommand
                             break;
                         default:
                             break;
@@ -104,7 +111,9 @@ namespace ConsoleFileManager.View
         /// <param name="file">Новый выделенный файл.</param>
         private static void ChangeSelectFile(FileModel file)
         {
-            Console.WriteLine(file.FilePath);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(file.ToString());
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         /// <summary>Изменение выводимого списка 1 уровня.</summary>
@@ -112,10 +121,7 @@ namespace ConsoleFileManager.View
         private static void ChangeMainListFiles(FileListModel fileList)
         {
             List<FileModel> files = fileList.GetFiles();
-            foreach(FileModel file in files)
-            {
-                Console.WriteLine(file.ToString());
-            }
+            ViewPrint.PrintFileList(files, files);
         }
 
         /// <summary>Запрос на подтверждение действия.</summary>
