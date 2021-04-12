@@ -11,17 +11,17 @@ namespace ConsoleFileManager.Controls
         private Settings _settings = new Settings(); //инициализация класса настроек
 
         private FileModel _selectedFile;        //выделенный файл
+
+        private FileListModel _rootFolder;      //корневая папка для 1 уровня.
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
+        private List<FileListModel> _allActivedFiles;
 
         public delegate void ChangeSelectedFileHandler(FileModel selectedFile);
         public event ChangeSelectedFileHandler Notify;          //определение события изменения выделенного элемента
 
         public delegate void ChangeMainListFiles(FileListModel mainMainListFiles);
-        public event ChangeMainListFiles ChangeMainListNotify;  //определение события измененния списка файлов 1 уровня
-
-        public delegate void ChangeSubListFiles(FileListModel subListFiles);
-        public event ChangeMainListFiles ChangeSubListNotify;   //определение события измененния списка файлов 2 уровня
+        public event ChangeMainListFiles ChangeListNotify;  //определение события измененния списка файлов 1 уровня
 
         #region Properties
 
@@ -39,6 +39,16 @@ namespace ConsoleFileManager.Controls
             }
         }
 
+        public FileListModel RootFolder
+        {
+            get => _rootFolder;
+            set
+            {
+                _rootFolder = value;
+                ChangeListNotify?.Invoke(_allActivedFiles);
+            }
+        }
+
         /// <summary>Отображаемый список файлов 1 уровня.</summary>
         public FileListModel MainListFiles
         {
@@ -46,8 +56,7 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _mainListFiles = value;
-                ChangeMainListNotify?.Invoke(_mainListFiles);
-
+                ChangeListNotify?.Invoke(_allActivedFiles);
             }
         }
 
@@ -58,7 +67,7 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _subListFiles = value;
-                ChangeSubListNotify?.Invoke(_subListFiles);
+                ChangeListNotify?.Invoke(_subListFiles);
             }
         }
 
@@ -179,30 +188,6 @@ namespace ConsoleFileManager.Controls
                 subFileModels = fileList.GetFiles();
                 FileInfo fileInfo = new FileInfo(subFileModels[0].FilePath);
                 root = fileInfo.Directory.Name;
-            }
-
-            List<FileModel> fileModels = fileList.GetFiles();
-            //проход по списку, если адрес папки совпадает
-            //с адресом списка 2 уровня - продолжаем в нем.
-            for (int i = 0; i < fileModels.Count; i++)
-            {
-                if (fileModels[i] == _selectedFile)
-                {
-                    if (directionUp && i >= numbMovementLines)   //вверх
-                    {
-                        SelectedFile = fileModels[i - numbMovementLines];
-                        break;
-                    }
-
-                    if(!directionUp && numbStr < _settings.GetCountStrInPage()-1 && numbStr < fileModels.Count) //вниз
-                    {
-                        SelectedFile = fileModels[i + 1];
-                        break;
-                        //TODO: добавить обработку случая с раскрытым список 2 уровня
-                    }
-                }
-
-                numbStr++;
             }
         }
     }

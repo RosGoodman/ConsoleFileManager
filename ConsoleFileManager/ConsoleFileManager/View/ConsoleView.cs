@@ -16,7 +16,7 @@ namespace ConsoleFileManager.View
         public ConsoleView(Controller controller)
         {
             controller.Notify += ChangeSelectFile;
-            controller.ChangeMainListNotify += ChangeMainListFiles;
+            controller.ChangeListNotify += UpdateLists;
             controller.LoadSettings();
         }
 
@@ -118,10 +118,12 @@ namespace ConsoleFileManager.View
 
         /// <summary>Изменение выводимого списка 1 уровня.</summary>
         /// <param name="fileList">Новый список файлов/папок.</param>
-        private static void ChangeMainListFiles(FileListModel fileList)
+        private static void UpdateLists(List<FileListModel> fileList)
         {
-            List<FileModel> files = fileList.GetFiles();
-            ViewPrint.PrintFileList(files, files);
+            //TODO: переписать на List<FileListModel> fileList
+
+            //List<FileModel> files = fileList.GetFiles();
+            //ViewPrint.PrintFileList(files, files);
         }
 
         /// <summary>Запрос на подтверждение действия.</summary>

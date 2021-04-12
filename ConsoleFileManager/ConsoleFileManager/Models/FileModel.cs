@@ -10,9 +10,15 @@ namespace ConsoleFileManager.Models
         private string _fileName = string.Empty;
         private string _filePath = string.Empty;
         private bool _isFolder = false;
+        private bool _folderIsOpen = false;
 
         internal string FilePath => _filePath;  //путь к файлу.
         internal bool IsFolder => _isFolder;    //является ли файл папкой.
+        internal bool FolderIsOpen
+        {
+            get => _folderIsOpen;
+            set { _folderIsOpen = value; }
+        }
 
         internal FileModel(string filePath)
         {
