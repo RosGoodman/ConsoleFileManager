@@ -116,14 +116,12 @@ namespace ConsoleFileManager.View
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        /// <summary>Изменение выводимого списка 1 уровня.</summary>
+        /// <summary>Обновить выведенный список.</summary>
         /// <param name="fileList">Новый список файлов/папок.</param>
-        private static void UpdateLists(List<FileListModel> fileList)
+        private static void UpdateLists(List<FileModel> fileList)
         {
-            //TODO: переписать на List<FileListModel> fileList
-
-            //List<FileModel> files = fileList.GetFiles();
-            //ViewPrint.PrintFileList(files, files);
+            //TODO: добавить получение данных о текущей странице и макс. кол-ве строк на странице
+            ViewPrint.PrintFileList(fileList, 1, 40);
         }
 
         /// <summary>Запрос на подтверждение действия.</summary>

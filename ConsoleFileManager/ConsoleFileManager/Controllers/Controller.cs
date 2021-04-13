@@ -15,12 +15,12 @@ namespace ConsoleFileManager.Controls
         private FileListModel _rootFolder;      //корневая папка для 1 уровня.
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
-        private List<FileListModel> _allActivedFiles;
+        private List<FileModel> _allActivedFiles;   //список всех активных файлов
 
         public delegate void ChangeSelectedFileHandler(FileModel selectedFile);
         public event ChangeSelectedFileHandler Notify;          //определение события изменения выделенного элемента
 
-        public delegate void ChangeMainListFiles(FileListModel mainMainListFiles);
+        public delegate void ChangeMainListFiles(List<FileModel> mainMainListFiles);
         public event ChangeMainListFiles ChangeListNotify;  //определение события измененния списка файлов 1 уровня
 
         #region Properties
@@ -39,39 +39,53 @@ namespace ConsoleFileManager.Controls
             }
         }
 
+        public List<FileModel> AllActivedFiles
+        {
+            get => _allActivedFiles;
+            set
+            {
+                if(_allActivedFiles != value)
+                {
+                    _allActivedFiles = value;
+                    ChangeListNotify?.Invoke(_allActivedFiles);
+                }
+            }
+        }
+
+        /// <summary>Корневая папка.</summary>
         public FileListModel RootFolder
         {
             get => _rootFolder;
             set
             {
                 _rootFolder = value;
-                ChangeListNotify?.Invoke(_allActivedFiles);
+                AssemblyFilesIntoList();
             }
         }
 
-        /// <summary>Отображаемый список файлов 1 уровня.</summary>
+        /// <summary>Список файлов 1 уровня.</summary>
         public FileListModel MainListFiles
         {
             get => _mainListFiles;
             set
             {
                 _mainListFiles = value;
-                ChangeListNotify?.Invoke(_allActivedFiles);
+                AssemblyFilesIntoList();
             }
         }
 
-        /// <summary>Отображаемый список файлов 2 уровня.</summary>
+        /// <summary>Список файлов 2 уровня.</summary>
         public FileListModel SubListFiles
         {
             get => _subListFiles;
             set
             {
                 _subListFiles = value;
-                ChangeListNotify?.Invoke(_subListFiles);
+                AssemblyFilesIntoList();
             }
         }
 
-        private Settings SettingsControl { get; set; } //свойство для доступа к настройкам
+        //private Settings SettingsControl { get; set; } //свойство для доступа к настройкам
 
         #endregion
 
@@ -115,6 +129,7 @@ namespace ConsoleFileManager.Controls
             string lastPath = _settings.GetLastPath();
             List<string> filesInDir = WorkWithFilesAndDir.GetAllFilesInDir(lastPath);
 
+            RootFolder = new FileListModel(new List<string> { lastPath });
             MainListFiles = new FileListModel(filesInDir);
             SelectedFile = _mainListFiles.GetFiles()[0];
         }
@@ -163,31 +178,82 @@ namespace ConsoleFileManager.Controls
         /// <summary>Выделить файл выше по списку.</summary>
         internal void SelectTheTopOne()
         {
-            ChangeSelectionFile(_mainListFiles, true, 1);
+            ChangeSelectionFile(true, 1);
         }
 
         /// <summary>Выделить файл ниже по списку.</summary>
         internal void SelectTheLowerOne()
         {
-            ChangeSelectionFile(_mainListFiles, false, 1);
+            ChangeSelectionFile(false, 1);
         }
 
         #endregion
 
         /// <summary>Изменить selectedFile в заданном направлении.</summary>
-        /// <param name="fileList">Просматриваемый список.</param>
         /// <param name="directionUp">Направление движения по списку (true - вврх, false -вниз).</param>
         /// <param name="numbMovementLines">Количество строк смещения выделения.</param>
-        /// <param name="numbStr">Номер строки родительской директории для списка 2 уровня.</param>
-        private void ChangeSelectionFile(FileListModel fileList, bool directionUp, int numbMovementLines, int numbStr = 0)
+        private void ChangeSelectionFile(bool directionUp, int numbMovementLines)
         {
-            List<FileModel> subFileModels;
-            string root = string.Empty;
-            if (_subListFiles != null)   //получаем родительскую директорию списка 2 уровня
+            for (int i = 0; i < _allActivedFiles.Count; i++)
             {
-                subFileModels = fileList.GetFiles();
-                FileInfo fileInfo = new FileInfo(subFileModels[0].FilePath);
-                root = fileInfo.Directory.Name;
+                if(_allActivedFiles[i] == SelectedFile)
+                {
+                    if (directionUp && i >= numbMovementLines)
+                    {
+                        SelectedFile = _allActivedFiles[i - numbMovementLines];
+                        break;
+                    }
+                    else if (!directionUp && _allActivedFiles.Count - i > numbMovementLines)
+                    {
+                        SelectedFile = _allActivedFiles[i + numbMovementLines];
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>Собрать все файлы в один список.</summary>
+        private void AssemblyFilesIntoList()
+        {
+            List<FileModel> newList = new List<FileModel>();
+
+            AssemblyCicle(newList, _rootFolder, 0);
+
+            if(_mainListFiles != null)
+                AssemblyCicle(newList, _mainListFiles, 1, _subListFiles);
+
+            AllActivedFiles = newList;
+        }
+
+        /// <summary>Циклы сборки файлов в 1 список.</summary>
+        /// <param name="fileListModel"></param>
+        /// <param name="deepthFileListModel"></param>
+        /// <param name="subFileListModel"></param>
+        private void AssemblyCicle(List<FileModel> newList, 
+                                    FileListModel fileListModel, 
+                                    int deepthFileListModel, 
+                                    FileListModel subFileListModel = null)
+        {
+            //при необходимости можно добавить рекурсию для отображения большего кол-ва раскрытых папок.
+            List<FileModel> fileModels = fileListModel.GetFiles();
+            List<FileModel> subFileModels = null;
+
+            if (subFileListModel != null)
+                subFileModels = subFileListModel.GetFiles();
+
+            for (int i = 0; i < fileModels.Count; i++)
+            {
+                fileModels[i].DeepthLvl = deepthFileListModel;
+                newList.Add(fileModels[i]);
+
+                if (fileModels[i].FolderIsOpen && subFileListModel != null)
+                {
+                    for (int j = 0; j < subFileModels.Count; j++)
+                    {
+                        subFileModels[j].DeepthLvl = deepthFileListModel + 1;
+                        newList.Add(subFileModels[j]);
+                    }
+                }
             }
         }
     }

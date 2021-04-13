@@ -11,9 +11,18 @@ namespace ConsoleFileManager.Models
         private string _filePath = string.Empty;
         private bool _isFolder = false;
         private bool _folderIsOpen = false;
+        private int _deepthLvl;
 
         internal string FilePath => _filePath;  //путь к файлу.
         internal bool IsFolder => _isFolder;    //является ли файл папкой.
+
+        //уровень глубины 0-корневая папка, 1-файлы/папки в корневой, 2-все в папках 1 уровня
+        internal int DeepthLvl
+        {
+            get => _deepthLvl;
+            set { _deepthLvl = value; }
+        }
+
         internal bool FolderIsOpen
         {
             get => _folderIsOpen;
@@ -31,7 +40,7 @@ namespace ConsoleFileManager.Models
         }
 
         /// <summary>Получить данные файла.</summary>
-        /// <returns>Список информации.</returns>
+        /// <returns>Список информации (Имя файла, путь, является ли папкой).</returns>
         internal List<string> GetFileInfo()
         {
             List<string> fileInfo = new List<string>();
