@@ -10,14 +10,16 @@ namespace ConsoleFileManager.View
     public class ConsoleView
     {
         private Dictionary<int, Command> _buttons = new Dictionary<int, Command>();     //словарь команд (номер/команда)
-        //private Controller _controller;  //хранится для обработчика события
-        //private int _countFilesOnPage;  //кол-во файлов на странице
+        private int _countFilesOnPage = 40;  //кол-во файлов на странице
+        private int _numbPage = 0;  //текущая страница
 
         public ConsoleView(Controller controller)
         {
             controller.Notify += ChangeSelectFile;
             controller.ChangeListNotify += UpdateLists;
             controller.LoadSettings();
+
+            Console.SetBufferSize(600, 400);
         }
 
         /// <summary>Установить команду в соответствии с номером.</summary>
@@ -109,19 +111,34 @@ namespace ConsoleFileManager.View
 
         /// <summary>Изменение выделенного файла.</summary>
         /// <param name="file">Новый выделенный файл.</param>
-        private static void ChangeSelectFile(FileModel file)
+        /// <param name="fileList">Список файлов.</param>
+        private void ChangeSelectFile(FileModel file, List<FileModel> fileList)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(file.ToString());
-            Console.ForegroundColor = ConsoleColor.White;
+            int numbLine = 0;
+            //TODO: добавить получение данных о текущей странице и макс. кол-ве строк на странице
+            for (int i = 0; i < fileList.Count; i++)
+            {
+                if (file == fileList[i])
+                {
+                    numbLine = i;
+                    break;
+                }
+            }
+
+            //проверка выхода из страницы
+            if ((numbLine / 40) != _numbPage) return;
+
+                numbLine %= 40;
+
+            ViewPrint.VisualSelectingFile(numbLine, file, _countFilesOnPage);
         }
 
         /// <summary>Обновить выведенный список.</summary>
         /// <param name="fileList">Новый список файлов/папок.</param>
-        private static void UpdateLists(List<FileModel> fileList)
+        private void UpdateLists(List<FileModel> fileList)
         {
             //TODO: добавить получение данных о текущей странице и макс. кол-ве строк на странице
-            ViewPrint.PrintFileList(fileList, 1, 40);
+            ViewPrint.PrintFileList(fileList, _numbPage, 40);
         }
 
         /// <summary>Запрос на подтверждение действия.</summary>

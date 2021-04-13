@@ -17,10 +17,10 @@ namespace ConsoleFileManager.Controls
         private FileListModel _subListFiles;    //список файлов 2 уровня
         private List<FileModel> _allActivedFiles;   //список всех активных файлов
 
-        public delegate void ChangeSelectedFileHandler(FileModel selectedFile);
+        public delegate void ChangeSelectedFileHandler(FileModel selectedFile, List<FileModel> listFiles);
         public event ChangeSelectedFileHandler Notify;          //определение события изменения выделенного элемента
 
-        public delegate void ChangeMainListFiles(List<FileModel> mainMainListFiles);
+        public delegate void ChangeMainListFiles(List<FileModel> listFiles);
         public event ChangeMainListFiles ChangeListNotify;  //определение события измененния списка файлов 1 уровня
 
         #region Properties
@@ -34,7 +34,7 @@ namespace ConsoleFileManager.Controls
                 if(_selectedFile != value)
                 {
                     _selectedFile = value;
-                    Notify?.Invoke(_selectedFile);  //вызов события
+                    Notify?.Invoke(_selectedFile, _allActivedFiles);  //вызов события
                 }
             }
         }
@@ -131,7 +131,7 @@ namespace ConsoleFileManager.Controls
 
             RootFolder = new FileListModel(new List<string> { lastPath });
             MainListFiles = new FileListModel(filesInDir);
-            SelectedFile = _mainListFiles.GetFiles()[0];
+            SelectedFile = _allActivedFiles[0];
         }
 
         /// <summary>Сохранить настройки.</summary>
