@@ -35,29 +35,28 @@ namespace ConsoleFileManager.View
         }
 
         /// <summary>Выделить строку в списке.</summary>
-        /// <param name="line">Номер строки.</param>
-        /// <param name="fileName">Имя файла.</param>
-        internal static void VisualSelectingFile(int line, FileModel file, int countLines)
+        internal static void VisualSelectingFile(FileModel selectedFile, List<FileModel> pageList)
         {
-            for (int i = 0; i < countLines; i++)
+            Console.Clear();
+
+            for (int i = 0; i < pageList.Count; i++)
             {
-                string text = string.Empty;
-                Console.SetCursorPosition(i, 0);
-                //todo: считывание строки для перепечатывания
+                Console.SetCursorPosition(Console.CursorLeft, i);
+                Console.Write(new String(' ', Console.BufferWidth));
 
-                if (Console.BackgroundColor == ConsoleColor.Green)
+                if (pageList[i].IsFolder) Console.ForegroundColor = ConsoleColor.Yellow;
+                if (pageList[i] == selectedFile) Console.BackgroundColor = ConsoleColor.Green;
+
+                for (int j = 0; j < pageList[i].DeepthLvl; j++)
                 {
-                    text = Console.ReadLine();
-                    Console.BackgroundColor = ConsoleColor.Black;
-                    Console.Write(text);
+                    Console.Write("    ");
                 }
-            }
 
-            Console.WriteLine(new string(' ', 50));
-            Console.SetCursorPosition(0, line);
-            Console.BackgroundColor = ConsoleColor.Green;
-            Console.Write(file.ToString());
-            Console.BackgroundColor = ConsoleColor.Black;
+                Console.WriteLine(pageList[i].ToString());
+
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.BackgroundColor = ConsoleColor.Black;
+            }
         }
     }
 }

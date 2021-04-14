@@ -116,21 +116,24 @@ namespace ConsoleFileManager.View
         {
             int numbLine = 0;
             //TODO: добавить получение данных о текущей странице и макс. кол-ве строк на странице
+
+            List<FileModel> pageList = new List<FileModel>();
+
             for (int i = 0; i < fileList.Count; i++)
             {
-                if (file == fileList[i])
+                if (file == fileList[i]) numbLine = i;
+
+                //добавляем файлы в станицу
+                if(i >= _numbPage * _countFilesOnPage && i <= (_numbPage + 1) * _countFilesOnPage - 1)
                 {
-                    numbLine = i;
-                    break;
+                    pageList.Add(fileList[i]);
                 }
             }
 
             //проверка выхода из страницы
             if ((numbLine / 40) != _numbPage) return;
 
-                numbLine %= 40;
-
-            ViewPrint.VisualSelectingFile(numbLine, file, _countFilesOnPage);
+            ViewPrint.VisualSelectingFile(file, pageList);
         }
 
         /// <summary>Обновить выведенный список.</summary>
