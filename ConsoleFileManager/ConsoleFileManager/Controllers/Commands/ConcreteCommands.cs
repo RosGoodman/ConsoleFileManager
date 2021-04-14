@@ -74,4 +74,16 @@ namespace ConsoleFileManager.Controllers.Commands
 
         public override void Undo() => throw new System.NotImplementedException();
     }
+
+    /// <summary>Открыть выбранную директорию или запустить выбранный процесс.</summary>
+    internal class ChangeDirectoryOrRunProcessCommand : Command
+    {
+        private Controller _reseiver;
+
+        public ChangeDirectoryOrRunProcessCommand(Controller r) => _reseiver = r;
+
+        public override void Execute(string b = "") => _reseiver.ChangeDirOrRunProcess();
+
+        public override void Undo() => throw new System.NotImplementedException();
+    }
 }

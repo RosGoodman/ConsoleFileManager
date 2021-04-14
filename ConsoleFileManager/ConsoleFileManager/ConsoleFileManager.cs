@@ -15,6 +15,7 @@ namespace ConsoleFileManager
             Controller controller = new Controller();
             ConsoleView view = new ConsoleView(controller);
 
+            view.SetCommand(1, new ChangeDirectoryOrRunProcessCommand(controller));
             view.SetCommand(8, new DeleteCommand(controller));
             view.SetCommand(6, new CreateDirectoryCommand(controller));
             view.SetCommand(7, new RenameCommand(controller));

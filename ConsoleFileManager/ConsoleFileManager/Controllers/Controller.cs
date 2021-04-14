@@ -184,7 +184,30 @@ namespace ConsoleFileManager.Controls
             ChangeSelectionFile(false, 1);
         }
 
+        /// <summary>Открыть папку или запустить процесс.</summary>
+        internal void ChangeDirOrRunProcess()
+        {
+            if (_selectedFile.IsFolder)
+                OpenFolder();
+            else
+                RuningProcess();
+        }
+
         #endregion
+
+        #region ControllerMoethods  
+
+        /// <summary>Открыть выбранную директорию.</summary>
+        private void OpenFolder()
+        {
+            //TODO: реализовать метод
+        }
+
+        /// <summary>Запустить выбранный процесс.</summary>
+        private void RuningProcess()
+        {
+            //TODO: реализовать метод
+        }
 
         /// <summary>Изменить selectedFile в заданном направлении.</summary>
         /// <param name="directionUp">Направление движения по списку (true - вврх, false -вниз).</param>
@@ -253,5 +276,7 @@ namespace ConsoleFileManager.Controls
                 }
             }
         }
+
+        #endregion
     }
 }
