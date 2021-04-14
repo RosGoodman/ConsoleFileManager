@@ -15,8 +15,7 @@ namespace ConsoleFileManager.View
 
         public ConsoleView(Controller controller)
         {
-            controller.Notify += ChangeSelectFile;
-            controller.ChangeListNotify += UpdateLists;
+            controller.Notify += UpdateLists;
             controller.LoadSettings();
 
             Console.SetBufferSize(600, 400);
@@ -112,7 +111,7 @@ namespace ConsoleFileManager.View
         /// <summary>Изменение выделенного файла.</summary>
         /// <param name="file">Новый выделенный файл.</param>
         /// <param name="fileList">Список файлов.</param>
-        private void ChangeSelectFile(FileModel file, List<FileModel> fileList)
+        private void UpdateLists(FileModel file, List<FileModel> fileList)
         {
             int numbLine = 0;
             //TODO: добавить получение данных о текущей странице и макс. кол-ве строк на странице
@@ -134,14 +133,6 @@ namespace ConsoleFileManager.View
             if ((numbLine / 40) != _numbPage) return;
 
             ViewPrint.VisualSelectingFile(file, pageList);
-        }
-
-        /// <summary>Обновить выведенный список.</summary>
-        /// <param name="fileList">Новый список файлов/папок.</param>
-        private void UpdateLists(List<FileModel> fileList)
-        {
-            //TODO: добавить получение данных о текущей странице и макс. кол-ве строк на странице
-            ViewPrint.PrintFileList(fileList, _numbPage, 40);
         }
 
         /// <summary>Запрос на подтверждение действия.</summary>

@@ -20,9 +20,6 @@ namespace ConsoleFileManager.Controls
         public delegate void ChangeSelectedFileHandler(FileModel selectedFile, List<FileModel> listFiles);
         public event ChangeSelectedFileHandler Notify;          //определение события изменения выделенного элемента
 
-        public delegate void ChangeMainListFiles(List<FileModel> listFiles);
-        public event ChangeMainListFiles ChangeListNotify;  //определение события измененния списка файлов 1 уровня
-
         #region Properties
 
         /// <summary>Выделенный элемент.</summary>
@@ -47,7 +44,7 @@ namespace ConsoleFileManager.Controls
                 if(_allActivedFiles != value)
                 {
                     _allActivedFiles = value;
-                    ChangeListNotify?.Invoke(_allActivedFiles);
+                    Notify?.Invoke(_selectedFile, _allActivedFiles);
                 }
             }
         }

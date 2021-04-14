@@ -12,16 +12,6 @@ namespace ConsoleFileManager
     {
         public static void Main()
         {
-            Task t = Task.Run(() => {
-                while (true)
-                {
-                    if (Console.WindowWidth < 50 || Console.WindowHeight < 50)
-                    {
-                        Console.SetWindowSize(50, 50);
-                    }
-                }
-            });
-
             Controller controller = new Controller();
             ConsoleView view = new ConsoleView(controller);
 
