@@ -288,13 +288,10 @@ namespace ConsoleFileManager.Controls
 
             _rootFolder = new FileListModel(newRootList);
 
-            //новый selectedFile
-            List<FileModel> rootList = _rootFolder.GetFiles();
-            _selectedFile = rootList[0];
+            //флаг об открытии папки selectedFile
+            List<FileModel> rootFile = _rootFolder.GetFiles();
+            _selectedFile = rootFile[0];
             _selectedFile.FolderIsOpen = true;
-
-            //пересчет номера страницы
-
 
             //новый список mainLIst
             List<string> newMainList = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath);
@@ -305,9 +302,19 @@ namespace ConsoleFileManager.Controls
         }
 
         /// <summary>Обновить номер страницы.</summary>
-        private void UpdatePageNumer()
+        /// <param name="newList">Список всех активных файлов.</param>
+        private void UpdatePageNumer(List<FileModel> newList)
         {
-            NumbPage = _allActivedFiles.Count / _settings.GetCountStrInPage();
+            int numbStr = 0;
+            for (int i = 0; i < newList.Count; i++)
+            {
+                if(newList[i] == _selectedFile)
+                {
+                    numbStr = i;
+                    break;
+                }
+            }
+            NumbPage = numbStr / _settings.GetCountStrInPage();
         }
 
         /// <summary>Запустить выбранный процесс.</summary>
@@ -351,6 +358,9 @@ namespace ConsoleFileManager.Controls
 
             if(_mainListFiles != null)
                 AssemblyCicle(newList, _mainListFiles, 1, _subListFiles);
+
+            //пересчет номера страницы
+            UpdatePageNumer(newList);
 
             AllActivedFiles = newList;
         }
