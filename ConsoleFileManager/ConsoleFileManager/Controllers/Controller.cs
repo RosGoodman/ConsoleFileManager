@@ -191,6 +191,8 @@ namespace ConsoleFileManager.Controls
                 OpenFolder();
             else
                 RuningProcess();
+
+            AssemblyFilesIntoList();    //объединяем спискм в один
         }
 
         #endregion
@@ -200,7 +202,68 @@ namespace ConsoleFileManager.Controls
         /// <summary>Открыть выбранную директорию.</summary>
         private void OpenFolder()
         {
-            //TODO: реализовать метод
+            List<FileModel> rootList = _rootFolder.GetFiles();
+
+            if(_selectedFile != rootList[0])    //если открываемая папка не является корнем
+            {
+                if (!_selectedFile.FolderIsOpen)    //если папка уже не открыта
+                {
+                    List<FileModel> mainList = _mainListFiles.GetFiles();
+                    
+                    if (mainList.Contains(_selectedFile))
+                        OpenFolderInMainList(mainList); //если открываемая папка в mainListFiles
+                    else
+                        ChangeRootDir();          // если открываемая папка в subListFiles
+                }
+                else
+                {
+                    //закрываем открытую
+                    _subListFiles = null;
+                    SelectedFile.FolderIsOpen = false;
+                }
+            }
+            else
+            {
+                //вверх по корневой папке
+                ChangeRootDir();
+            }
+        }
+
+        /// <summary>Открываем папку находящуюся в mainListFiles.</summary>
+        /// <param name="mainList">Список файлов 1 уровня.</param>
+        private void OpenFolderInMainList(List<FileModel> mainList)
+        {
+            //открываем новую папку, закрываем (если открыта) другую
+            for (int i = 0; i < mainList.Count; i++)
+            {
+                if (mainList[i].FolderIsOpen)
+                    mainList[i].FolderIsOpen = false; //флаг - папка закрыта.
+
+                break;
+            }
+
+            List<string> filesInOpenDir = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath); //получаем список файлов в папке
+            _subListFiles = new FileListModel(filesInOpenDir);  //записываем в список 2 уровня
+            SelectedFile.FolderIsOpen = true;   //изменяем св-во, срабатывает событие
+        }
+
+        /// <summary>Открыть папку находящуюся в subListFiles.</summary>
+        private void ChangeRootDir()
+        {
+            //открываем папку в subList
+            //заменяем rootList
+            DirectoryInfo di = new DirectoryInfo(_selectedFile.FilePath);
+            DirectoryInfo parentDir = di.Parent;
+            List<string> newRootList = new List<string>() { parentDir.FullName };
+            _rootFolder = new FileListModel(newRootList);
+            _selectedFile.FolderIsOpen = true;
+
+            //новый список mainLIst
+            List<string> newMainList = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath);
+            _mainListFiles = new FileListModel(newMainList);
+
+            //обновление subListFiles
+            SubListFiles = null;
         }
 
         /// <summary>Запустить выбранный процесс.</summary>

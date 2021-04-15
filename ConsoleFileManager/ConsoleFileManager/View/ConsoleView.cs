@@ -53,7 +53,8 @@ namespace ConsoleFileManager.View
                             PressButton(0); //вызов ChangeActivePanelCommand();
                             break;
                         case ConsoleKey.Enter:
-                            PressButton(numbCommand, ReadParamString()); //ChangeDirectoryOrRunProcessCommand();
+                            if(numbCommand == 1) PressButton(numbCommand); //ChangeDirectoryOrRunProcessCommand();
+                            if(numbCommand != 1) PressButton(numbCommand, ReadParamString()); //ChangeDirectoryOrRunProcessCommand();
                             numbCommand = 1;
                             break;
                         case ConsoleKey.F3:
