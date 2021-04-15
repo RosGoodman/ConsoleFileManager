@@ -11,7 +11,6 @@ namespace ConsoleFileManager.Models
             AddFilesInList(entries);
         }
 
-
         /// <summary>Создать экземпляры модели файлов и внести в список.</summary>
         /// <param name="entries">Массив файлов в директории.</param>
         private void AddFilesInList(List<string> entries)

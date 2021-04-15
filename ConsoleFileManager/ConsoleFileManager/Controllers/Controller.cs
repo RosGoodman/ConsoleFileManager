@@ -1,4 +1,5 @@
-﻿using ConsoleFileManager.Controllers.Services;
+﻿using ConsoleFileManager.Controllers;
+using ConsoleFileManager.Controllers.Services;
 using ConsoleFileManager.Controllers.Settings;
 using ConsoleFileManager.Models;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace ConsoleFileManager.Controls
 
         public delegate void ChangePageHandler(int numbPage);
         public event ChangePageHandler PageChangeNotify;          //определение события изменения номера страницы
+
+        ////////////////////////////////////////////////////////////////////////////////////////
 
         #region Properties
 
@@ -77,7 +80,7 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _rootFolder = value;
-                AssemblyFilesIntoList();
+                ControllerMethods.AssemblyFilesIntoList(this, _rootFolder, _mainListFiles, _subListFiles);
             }
         }
 
@@ -88,7 +91,7 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _mainListFiles = value;
-                AssemblyFilesIntoList();
+                ControllerMethods.AssemblyFilesIntoList(this, _rootFolder, _mainListFiles, _subListFiles);
             }
         }
 
@@ -99,13 +102,15 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _subListFiles = value;
-                AssemblyFilesIntoList();
+                ControllerMethods.AssemblyFilesIntoList(this, _rootFolder, _mainListFiles, _subListFiles);
             }
         }
 
         //private Settings SettingsControl { get; set; } //свойство для доступа к настройкам
 
         #endregion
+
+        ////////////////////////////////////////////////////////////////////////////////////////
 
         #region SelectedFileInfo
 
@@ -132,6 +137,8 @@ namespace ConsoleFileManager.Controls
 
         #endregion
 
+        ////////////////////////////////////////////////////////////////////////////////////////
+
         #region SettingsControl interface
 
         /// <summary>Установить новое значение параметра.</summary>
@@ -156,6 +163,8 @@ namespace ConsoleFileManager.Controls
         public void SaveSettings() => _settings.SaveSettings();
 
         #endregion
+
+        ////////////////////////////////////////////////////////////////////////////////////////
 
         #region commands
 
@@ -196,206 +205,24 @@ namespace ConsoleFileManager.Controls
         /// <summary>Выделить файл выше по списку.</summary>
         internal void SelectTheTopOne()
         {
-            ChangeSelectionFile(true, 1);
+            ControllerMethods.ChangeSelectionFile(this, true, 1);
         }
 
         /// <summary>Выделить файл ниже по списку.</summary>
         internal void SelectTheLowerOne()
         {
-            ChangeSelectionFile(false, 1);
+            ControllerMethods.ChangeSelectionFile(this, false, 1);
         }
 
         /// <summary>Открыть папку или запустить процесс.</summary>
         internal void ChangeDirOrRunProcess()
         {
             if (_selectedFile.IsFolder)
-                OpenFolder();
+                ControllerMethods.OpenFolder();
             else
-                RuningProcess();
+                ControllerMethods.RuningProcess();
 
-            AssemblyFilesIntoList();    //объединяем спискм в один
-        }
-
-        #endregion
-
-        #region ControllerMoethods  
-
-        /// <summary>Открыть выбранную директорию.</summary>
-        private void OpenFolder()
-        {
-            List<FileModel> rootList = _rootFolder.GetFiles();
-
-            if(_selectedFile == rootList[0])    //если открываемая папка не является корнем
-            {
-                //todo: условие, что корень не является диском (C:, D: и т.д.)
-
-                //вверх по корневой папке
-                ChangeRootDir(false);
-                return;
-            }
-
-            if (!_selectedFile.FolderIsOpen)    //если папка не открыта
-            {
-                List<FileModel> mainList = _mainListFiles.GetFiles();
-
-                if (mainList.Contains(_selectedFile))
-                    OpenFolderInMainList(mainList); //если открываемая папка в mainListFiles
-                else
-                    ChangeRootDir(true);          // если открываемая папка в subListFiles
-            }
-            else
-            {
-                //закрываем открытую
-                _subListFiles = null;
-                SelectedFile.FolderIsOpen = false;
-            }
-        }
-
-        /// <summary>Открываем папку находящуюся в mainListFiles.</summary>
-        /// <param name="mainList">Список файлов 1 уровня.</param>
-        private void OpenFolderInMainList(List<FileModel> mainList)
-        {
-            //открываем новую папку, закрываем (если открыта) другую
-            for (int i = 0; i < mainList.Count; i++)
-            {
-                if (mainList[i].FolderIsOpen)
-                {
-                    mainList[i].FolderIsOpen = false; //флаг - папка закрыта.
-                    break;
-                }
-            }
-
-            List<string> filesInOpenDir = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath); //получаем список файлов в папке
-            _subListFiles = new FileListModel(filesInOpenDir);  //записываем в список 2 уровня
-            SelectedFile.FolderIsOpen = true;   //изменяем св-во, срабатывает событие
-        }
-
-        /// <summary>Открыть папку находящуюся в subListFiles.</summary>
-        /// <param name="selectedIsRoot">true - Сделать выбранную папку корневой, false - сделать parent коневой.</param>
-        private void ChangeRootDir(bool selectedIsRoot)
-        {
-            //открываем папку в subList
-            //заменяем rootList
-            DirectoryInfo di = new DirectoryInfo(_selectedFile.FilePath);
-            List<string> newRootList;
-
-            if (selectedIsRoot)
-                newRootList = new List<string>() { di.FullName };
-            else
-            {
-                DirectoryInfo parentDir = di.Parent;
-                newRootList = new List<string>() { parentDir.FullName };
-            }
-
-            _rootFolder = new FileListModel(newRootList);
-
-            //флаг об открытии папки selectedFile
-            List<FileModel> rootFile = _rootFolder.GetFiles();
-            _selectedFile = rootFile[0];
-            _selectedFile.FolderIsOpen = true;
-
-            //новый список mainLIst
-            List<string> newMainList = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath);
-            _mainListFiles = new FileListModel(newMainList);
-
-            //обновление subListFiles
-            SubListFiles = null;
-        }
-
-        /// <summary>Обновить номер страницы.</summary>
-        /// <param name="newList">Список всех активных файлов.</param>
-        private void UpdatePageNumer(List<FileModel> newList)
-        {
-            int numbStr = 0;
-            for (int i = 0; i < newList.Count; i++)
-            {
-                if(newList[i] == _selectedFile)
-                {
-                    numbStr = i;
-                    break;
-                }
-            }
-            NumbPage = numbStr / _settings.GetCountStrInPage();
-        }
-
-        /// <summary>Запустить выбранный процесс.</summary>
-        private void RuningProcess()
-        {
-            Process.Start(_selectedFile.FilePath);
-        }
-
-        /// <summary>Изменить selectedFile в заданном направлении.</summary>
-        /// <param name="directionUp">Направление движения по списку (true - вврх, false -вниз).</param>
-        /// <param name="numbMovementLines">Количество строк смещения выделения.</param>
-        private void ChangeSelectionFile(bool directionUp, int numbMovementLines)
-        {
-            for (int i = 0; i < _allActivedFiles.Count; i++)
-            {
-                if(_allActivedFiles[i] == SelectedFile)
-                {
-                    if (directionUp && i >= numbMovementLines)
-                    {
-                        NumbPage = (i - numbMovementLines) / _settings.GetCountStrInPage();    //изменяем номер страницы
-                        SelectedFile = _allActivedFiles[i - numbMovementLines];
-                        break;
-                    }
-                    else if (!directionUp && _allActivedFiles.Count - i > numbMovementLines)
-                    {
-                        int numb = _settings.GetCountStrInPage();
-                        NumbPage = (i + numbMovementLines) / numb;    //изменяем номер страницы
-                        SelectedFile = _allActivedFiles[i + numbMovementLines];
-                        break;
-                    }
-                }
-            }
-        }
-
-        /// <summary>Собрать все файлы в один список.</summary>
-        private void AssemblyFilesIntoList()
-        {
-            List<FileModel> newList = new List<FileModel>();
-
-            AssemblyCicle(newList, _rootFolder, 0);
-
-            if(_mainListFiles != null)
-                AssemblyCicle(newList, _mainListFiles, 1, _subListFiles);
-
-            //пересчет номера страницы
-            UpdatePageNumer(newList);
-
-            AllActivedFiles = newList;
-        }
-
-        /// <summary>Циклы сборки файлов в 1 список.</summary>
-        /// <param name="fileListModel"></param>
-        /// <param name="deepthFileListModel"></param>
-        /// <param name="subFileListModel"></param>
-        private void AssemblyCicle(List<FileModel> newList, 
-                                    FileListModel fileListModel, 
-                                    int deepthFileListModel, 
-                                    FileListModel subFileListModel = null)
-        {
-            //при необходимости можно добавить рекурсию для отображения большего кол-ва раскрытых папок.
-            List<FileModel> fileModels = fileListModel.GetFiles();
-            List<FileModel> subFileModels = null;
-
-            if (subFileListModel != null)
-                subFileModels = subFileListModel.GetFiles();
-
-            for (int i = 0; i < fileModels.Count; i++)
-            {
-                fileModels[i].DeepthLvl = deepthFileListModel;
-                newList.Add(fileModels[i]);
-
-                if (fileModels[i].FolderIsOpen && subFileListModel != null)
-                {
-                    for (int j = 0; j < subFileModels.Count; j++)
-                    {
-                        subFileModels[j].DeepthLvl = deepthFileListModel + 1;
-                        newList.Add(subFileModels[j]);
-                    }
-                }
-            }
+            ControllerMethods.AssemblyFilesIntoList(this);    //объединяем спискм в один
         }
 
         #endregion
