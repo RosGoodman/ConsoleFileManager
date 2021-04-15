@@ -45,6 +45,7 @@ namespace ConsoleFileManager.Controllers.Settings
         /// <returns></returns>
         internal int GetCountStrInPage()
         {
+            //TODO: доделать
             foreach(PropertyBase prop in _propList)
             {
                 if (prop.propName == "StringCount")
@@ -102,7 +103,7 @@ namespace ConsoleFileManager.Controllers.Settings
         }
     }
 
-    #region Properties
+    #region SettingsProperties_Classes
 
     ///////////////////////////////////////
     ///описание методов в базовом классе///

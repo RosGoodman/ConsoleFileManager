@@ -11,14 +11,15 @@ namespace ConsoleFileManager.View
     {
         private Dictionary<int, Command> _buttons = new Dictionary<int, Command>();     //словарь команд (номер/команда)
         private int _countFilesOnPage = 40;  //кол-во файлов на странице
-        private int _numbPage = 0;  //текущая страница
+        private int _numbPage;  //текущая страница
 
         public ConsoleView(Controller controller)
         {
             controller.Notify += UpdateLists;
+            controller.PageChangeNotify += ChangePageNumb;
             controller.LoadSettings();
 
-            Console.SetBufferSize(600, 400);
+            Console.SetBufferSize(800, 600);
         }
 
         /// <summary>Установить команду в соответствии с номером.</summary>
@@ -109,29 +110,28 @@ namespace ConsoleFileManager.View
             }
         }
 
+        /// <summary>Изменить номер страницы.</summary>
+        /// <param name="newPageNumb">Новый номер страницы.</param>
+        private void ChangePageNumb(int newPageNumb)
+        {
+            _numbPage = newPageNumb;
+        }
+
         /// <summary>Изменение выделенного файла.</summary>
         /// <param name="file">Новый выделенный файл.</param>
         /// <param name="fileList">Список файлов.</param>
         private void UpdateLists(FileModel file, List<FileModel> fileList)
         {
-            int numbLine = 0;
-            //TODO: добавить получение данных о текущей странице и макс. кол-ве строк на странице
-
             List<FileModel> pageList = new List<FileModel>();
+            int firstOnPage = _numbPage * _countFilesOnPage;
 
-            for (int i = 0; i < fileList.Count; i++)
+            for (int i = firstOnPage; i < firstOnPage + _countFilesOnPage; i++)
             {
-                if (file == fileList[i]) numbLine = i;
+                if (i + 1 > fileList.Count) break;
 
                 //добавляем файлы в станицу
-                if(i >= _numbPage * _countFilesOnPage && i <= (_numbPage + 1) * _countFilesOnPage - 1)
-                {
-                    pageList.Add(fileList[i]);
-                }
+                pageList.Add(fileList[i]);
             }
-
-            //проверка выхода из страницы
-            if ((numbLine / 40) != _numbPage) return;
 
             ViewPrint.VisualSelectingFile(file, pageList);
         }

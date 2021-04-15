@@ -10,6 +10,8 @@ namespace ConsoleFileManager.Controls
     {
         private Settings _settings = new Settings(); //инициализация класса настроек
 
+        private int _numbPage;  //номер текущей страницы
+
         private FileModel _selectedFile;        //выделенный файл
 
         private FileListModel _rootFolder;      //корневая папка для 1 уровня.
@@ -17,10 +19,27 @@ namespace ConsoleFileManager.Controls
         private FileListModel _subListFiles;    //список файлов 2 уровня
         private List<FileModel> _allActivedFiles;   //список всех активных файлов
 
-        public delegate void ChangeSelectedFileHandler(FileModel selectedFile, List<FileModel> listFiles);
-        public event ChangeSelectedFileHandler Notify;          //определение события изменения выделенного элемента
+        public delegate void ChangeFileHandler(FileModel selectedFile, List<FileModel> listFiles);
+        public event ChangeFileHandler Notify;          //определение события изменения в списке
+
+        public delegate void ChangePageHandler(int numbPage);
+        public event ChangePageHandler PageChangeNotify;          //определение события изменения номера страницы
 
         #region Properties
+
+        /// <summary>Номер текущей страницы.</summary>
+        public int NumbPage
+        {
+            get => _numbPage;
+            set
+            {
+                if(_numbPage != value)
+                {
+                    _numbPage = value;
+                    PageChangeNotify?.Invoke(_numbPage);
+                }
+            }
+        }
 
         /// <summary>Выделенный элемент.</summary>
         public FileModel SelectedFile
@@ -36,6 +55,7 @@ namespace ConsoleFileManager.Controls
             }
         }
 
+        /// <summary>Упорядоченный для вывода список всех активных файлов.</summary>
         public List<FileModel> AllActivedFiles
         {
             get => _allActivedFiles;
@@ -255,7 +275,7 @@ namespace ConsoleFileManager.Controls
             //открываем папку в subList
             //заменяем rootList
             DirectoryInfo di = new DirectoryInfo(_selectedFile.FilePath);
-            List<string> newRootList = new List<string>();
+            List<string> newRootList;
 
             if (selectedToRoot)
                 newRootList = new List<string>() { di.FullName };
@@ -297,11 +317,14 @@ namespace ConsoleFileManager.Controls
                 {
                     if (directionUp && i >= numbMovementLines)
                     {
+                        NumbPage = (i - numbMovementLines) / _settings.GetCountStrInPage();    //изменяем номер страницы
                         SelectedFile = _allActivedFiles[i - numbMovementLines];
                         break;
                     }
                     else if (!directionUp && _allActivedFiles.Count - i > numbMovementLines)
                     {
+                        int numb = _settings.GetCountStrInPage();
+                        NumbPage = (i + numbMovementLines) / numb;    //изменяем номер страницы
                         SelectedFile = _allActivedFiles[i + numbMovementLines];
                         break;
                     }
