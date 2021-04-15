@@ -2,6 +2,7 @@
 using ConsoleFileManager.Controllers.Settings;
 using ConsoleFileManager.Models;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace ConsoleFileManager.Controls
@@ -320,7 +321,7 @@ namespace ConsoleFileManager.Controls
         /// <summary>Запустить выбранный процесс.</summary>
         private void RuningProcess()
         {
-            //TODO: реализовать метод
+            Process.Start(_selectedFile.FilePath);
         }
 
         /// <summary>Изменить selectedFile в заданном направлении.</summary>
