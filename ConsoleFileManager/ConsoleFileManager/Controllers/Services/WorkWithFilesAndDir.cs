@@ -94,6 +94,7 @@ namespace ConsoleFileManager.Controllers.Services
         /// <returns>Массив всех файлов.</returns>
         internal static List<string> GetAllFilesInDir(string directory)
         {
+            //TODO: добавить try catch
             string[] dir = Directory.GetDirectories(directory);
             string[] files = Directory.GetFiles(directory);
             List<string> filesAndDir = new List<string>();

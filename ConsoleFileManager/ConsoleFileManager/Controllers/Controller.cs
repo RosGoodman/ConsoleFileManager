@@ -204,28 +204,29 @@ namespace ConsoleFileManager.Controls
         {
             List<FileModel> rootList = _rootFolder.GetFiles();
 
-            if(_selectedFile != rootList[0])    //если открываемая папка не является корнем
+            if(_selectedFile == rootList[0])    //если открываемая папка не является корнем
             {
-                if (!_selectedFile.FolderIsOpen)    //если папка уже не открыта
-                {
-                    List<FileModel> mainList = _mainListFiles.GetFiles();
-                    
-                    if (mainList.Contains(_selectedFile))
-                        OpenFolderInMainList(mainList); //если открываемая папка в mainListFiles
-                    else
-                        ChangeRootDir();          // если открываемая папка в subListFiles
-                }
+                //todo: условие, что корень не является диском (C:, D: и т.д.)
+
+                //вверх по корневой папке
+                ChangeRootDir(false);
+                return;
+            }
+
+            if (!_selectedFile.FolderIsOpen)    //если папка не открыта
+            {
+                List<FileModel> mainList = _mainListFiles.GetFiles();
+
+                if (mainList.Contains(_selectedFile))
+                    OpenFolderInMainList(mainList); //если открываемая папка в mainListFiles
                 else
-                {
-                    //закрываем открытую
-                    _subListFiles = null;
-                    SelectedFile.FolderIsOpen = false;
-                }
+                    ChangeRootDir(true);          // если открываемая папка в subListFiles
             }
             else
             {
-                //вверх по корневой папке
-                ChangeRootDir();
+                //закрываем открытую
+                _subListFiles = null;
+                SelectedFile.FolderIsOpen = false;
             }
         }
 
@@ -248,14 +249,27 @@ namespace ConsoleFileManager.Controls
         }
 
         /// <summary>Открыть папку находящуюся в subListFiles.</summary>
-        private void ChangeRootDir()
+        /// <param name="selectedToRoot">true - Сделать выбранную папку корневой, false - сделать parent коневой.</param>
+        private void ChangeRootDir(bool selectedToRoot)
         {
             //открываем папку в subList
             //заменяем rootList
             DirectoryInfo di = new DirectoryInfo(_selectedFile.FilePath);
-            DirectoryInfo parentDir = di.Parent;
-            List<string> newRootList = new List<string>() { parentDir.FullName };
+            List<string> newRootList = new List<string>();
+
+            if (selectedToRoot)
+                newRootList = new List<string>() { di.FullName };
+            else
+            {
+                DirectoryInfo parentDir = di.Parent;
+                newRootList = new List<string>() { parentDir.FullName };
+            }
+
             _rootFolder = new FileListModel(newRootList);
+
+            //новый selectedFile
+            List<FileModel> rootList = _rootFolder.GetFiles();
+            _selectedFile = rootList[0];
             _selectedFile.FolderIsOpen = true;
 
             //новый список mainLIst
