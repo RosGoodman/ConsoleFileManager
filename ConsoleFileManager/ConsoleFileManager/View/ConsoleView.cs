@@ -19,7 +19,7 @@ namespace ConsoleFileManager.View
             controller.PageChangeNotify += ChangePageNumb;
             controller.LoadSettings();
 
-            Console.SetBufferSize(800, 600);
+            Console.SetBufferSize(1024, 768);
         }
 
         /// <summary>Установить команду в соответствии с номером.</summary>

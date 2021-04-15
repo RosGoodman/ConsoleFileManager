@@ -258,9 +258,10 @@ namespace ConsoleFileManager.Controls
             for (int i = 0; i < mainList.Count; i++)
             {
                 if (mainList[i].FolderIsOpen)
+                {
                     mainList[i].FolderIsOpen = false; //флаг - папка закрыта.
-
-                break;
+                    break;
+                }
             }
 
             List<string> filesInOpenDir = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath); //получаем список файлов в папке
@@ -269,15 +270,15 @@ namespace ConsoleFileManager.Controls
         }
 
         /// <summary>Открыть папку находящуюся в subListFiles.</summary>
-        /// <param name="selectedToRoot">true - Сделать выбранную папку корневой, false - сделать parent коневой.</param>
-        private void ChangeRootDir(bool selectedToRoot)
+        /// <param name="selectedIsRoot">true - Сделать выбранную папку корневой, false - сделать parent коневой.</param>
+        private void ChangeRootDir(bool selectedIsRoot)
         {
             //открываем папку в subList
             //заменяем rootList
             DirectoryInfo di = new DirectoryInfo(_selectedFile.FilePath);
             List<string> newRootList;
 
-            if (selectedToRoot)
+            if (selectedIsRoot)
                 newRootList = new List<string>() { di.FullName };
             else
             {
@@ -292,12 +293,21 @@ namespace ConsoleFileManager.Controls
             _selectedFile = rootList[0];
             _selectedFile.FolderIsOpen = true;
 
+            //пересчет номера страницы
+
+
             //новый список mainLIst
             List<string> newMainList = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath);
             _mainListFiles = new FileListModel(newMainList);
 
             //обновление subListFiles
             SubListFiles = null;
+        }
+
+        /// <summary>Обновить номер страницы.</summary>
+        private void UpdatePageNumer()
+        {
+            NumbPage = _allActivedFiles.Count / _settings.GetCountStrInPage();
         }
 
         /// <summary>Запустить выбранный процесс.</summary>
