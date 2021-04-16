@@ -38,6 +38,11 @@ namespace ConsoleFileManager.View
             _buttons[number].Execute(param);
         }
 
+        private void PressUndoButton(int number, string param = "")
+        {
+            _buttons[number].Undo(param);
+        }
+
         /// <summary>Обработка нажатия клавиш.</summary>
         public void Explore()
         {
@@ -101,7 +106,7 @@ namespace ConsoleFileManager.View
                             PressButton(14);    //NextPageCommand
                             break;
                         case ConsoleKey.PageUp:
-                            PressButton(15);    //PreviousePageCommand
+                            PressUndoButton(14);    //PreviousePageCommand
                             break;
                         default:
                             break;

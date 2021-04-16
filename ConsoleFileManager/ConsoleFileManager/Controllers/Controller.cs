@@ -235,9 +235,9 @@ namespace ConsoleFileManager.Controls
         {
             int count = _settings.GetCountStrInPage();
             int index = ControllerMethods.GetIndexSelectedFile(_allActivedFiles, _selectedFile);
-            int ost = index % count;
-            int countStepUp = _settings.GetCountStrInPage() - (ControllerMethods.GetIndexSelectedFile(_allActivedFiles, _selectedFile) % _settings.GetCountStrInPage());
-            ControllerMethods.ChangeSelectionFile(false, countStepUp-1);
+            int countStepUp = count - (index % count) - 1;
+
+            ControllerMethods.ChangeSelectionFile(false, countStepUp);
         }
 
         /// <summary>Открыть папку или запустить процесс.</summary>
@@ -249,6 +249,16 @@ namespace ConsoleFileManager.Controls
                 ControllerMethods.RuningProcess();
 
             ControllerMethods.AssemblyFilesIntoList();    //объединяем спискм в один
+        }
+
+        internal void PageUp()
+        {
+            NumbPage++;
+        }
+
+        internal void PageDown()
+        {
+            NumbPage--;
         }
 
         #endregion

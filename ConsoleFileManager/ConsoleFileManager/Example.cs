@@ -142,7 +142,7 @@ namespace ConsoleFileManager
             if (commandsHistory.Count > 0)
             {
                 Command undoCommand = commandsHistory.Pop();
-                undoCommand.Undo();
+                //undoCommand.Undo();
             }
         }
     }
