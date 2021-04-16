@@ -47,8 +47,6 @@ namespace ConsoleFileManager.View
             Console.WriteLine(printingStr);
 
             Console.ResetColor();
-
-            //Console.
         }
 
         /// <summary>Вывод в консоль запроса на подтверждение действия.</summary>
