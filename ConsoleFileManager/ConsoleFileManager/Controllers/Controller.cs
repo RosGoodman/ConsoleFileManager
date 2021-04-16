@@ -40,7 +40,6 @@ namespace ConsoleFileManager.Controls
         internal Settings Settings
         {
             get => _settings;
-            set { _settings = value; }
         }
 
         /// <summary>Номер текущей страницы.</summary>
@@ -117,8 +116,6 @@ namespace ConsoleFileManager.Controls
                 ControllerMethods.AssemblyFilesIntoList();
             }
         }
-
-        //private Settings SettingsControl { get; set; } //свойство для доступа к настройкам
 
         #endregion
 
@@ -224,6 +221,20 @@ namespace ConsoleFileManager.Controls
         internal void SelectTheLowerOne()
         {
             ControllerMethods.ChangeSelectionFile(false, 1);
+        }
+
+        /// <summary>Выделить первый файл на странице.</summary>
+        internal void SelectFirstOnPage()
+        {
+            int countStepUp = ControllerMethods.GetIndexSelectedFile(_allActivedFiles, _selectedFile) % _settings.GetCountStrInPage();
+            ControllerMethods.ChangeSelectionFile(true, countStepUp);
+        }
+
+        /// <summary>Выделить последний файл на странице.</summary>
+        internal void SelectLastOnPage()
+        {
+            int countStepUp = _settings.GetCountStrInPage() - (ControllerMethods.GetIndexSelectedFile(_allActivedFiles, _selectedFile) % _settings.GetCountStrInPage());
+            ControllerMethods.ChangeSelectionFile(false, countStepUp);
         }
 
         /// <summary>Открыть папку или запустить процесс.</summary>

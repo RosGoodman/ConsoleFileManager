@@ -86,4 +86,28 @@ namespace ConsoleFileManager.Controllers.Commands
 
         public override void Undo() => throw new System.NotImplementedException();
     }
+
+    /// <summary>Выделить последний элемент на странице.</summary>
+    internal class SelectLastOnPage : Command
+    {
+        private Controller _reseiver;
+
+        public SelectLastOnPage(Controller r) => _reseiver = r;
+
+        public override void Execute(string b = "") => _reseiver.SelectLastOnPage();
+
+        public override void Undo() => throw new System.NotImplementedException();
+    }
+
+    /// <summary>Выделить первый элемент на странице.</summary>
+    internal class SelectFirstOnPage : Command
+    {
+        private Controller _reseiver;
+
+        public SelectFirstOnPage(Controller r) => _reseiver = r;
+
+        public override void Execute(string b = "") => _reseiver.SelectFirstOnPage();
+
+        public override void Undo() => throw new System.NotImplementedException();
+    }
 }

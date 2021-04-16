@@ -103,7 +103,7 @@ namespace ConsoleFileManager.Controllers
 
         /// <summary>Обновить номер страницы.</summary>
         /// <param name="newList">Список всех активных файлов.</param>
-        private static void UpdatePageNumer(List<FileModel> newList)
+        private static void UpdatePageNumber(List<FileModel> newList)
         {
             int numbStr = 0;
             for (int i = 0; i < newList.Count; i++)
@@ -160,7 +160,7 @@ namespace ConsoleFileManager.Controllers
                 AssemblyCicle(newList, _controller.MainListFiles, 1, _controller.SubListFiles);
 
             //пересчет номера страницы
-            UpdatePageNumer(newList);
+            UpdatePageNumber(newList);
 
             _controller.AllActivedFiles = newList;
         }
@@ -195,6 +195,19 @@ namespace ConsoleFileManager.Controllers
                     }
                 }
             }
+        }
+
+        /// <summary>Получить индекс выделенного в списке файла.</summary>
+        /// <param name="fileModels">Список поиска.</param>
+        /// <param name="selectedItem">Искомый элемент.</param>
+        /// <returns>Индекс.</returns>
+        internal static int GetIndexSelectedFile(List<FileModel> fileModels, FileModel selectedItem)
+        {
+            for (int i = 0; i < fileModels.Count; i++)
+            {
+                if (fileModels[i] == selectedItem) return i;
+            }
+            return -1;
         }
 
         #endregion

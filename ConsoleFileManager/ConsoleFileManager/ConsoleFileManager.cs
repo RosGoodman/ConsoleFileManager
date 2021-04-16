@@ -22,6 +22,8 @@ namespace ConsoleFileManager
             view.SetCommand(5, new MoveCommand(controller));
             view.SetCommand(10, new SelectTheLowerOneCommand(controller));
             view.SetCommand(11, new SelectTheTopOneCommand(controller));
+            view.SetCommand(12, new SelectLastOnPage(controller));
+            view.SetCommand(13, new SelectFirstOnPage(controller));
 
             view.Explore();
         }
