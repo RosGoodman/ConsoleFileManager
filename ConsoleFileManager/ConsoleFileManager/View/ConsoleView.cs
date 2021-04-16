@@ -18,8 +18,6 @@ namespace ConsoleFileManager.View
             controller.Notify += UpdateLists;
             controller.PageChangeNotify += ChangePageNumb;
             controller.LoadSettings();
-
-            Console.SetBufferSize(1024, 768);
         }
 
         /// <summary>Установить команду в соответствии с номером.</summary>
@@ -103,10 +101,10 @@ namespace ConsoleFileManager.View
                             PressButton(13);    //SelectingTheFirstFileOnPageCommand
                             break;
                         case ConsoleKey.PageDown:
-                            PressButton(14);    //NextPageCommand
+                            PressUndoButton(14);    //NextPageCommand
                             break;
                         case ConsoleKey.PageUp:
-                            PressUndoButton(14);    //PreviousePageCommand
+                            PressButton(14);    //PreviousePageCommand
                             break;
                         default:
                             break;
@@ -120,6 +118,28 @@ namespace ConsoleFileManager.View
         private void ChangePageNumb(int newPageNumb)
         {
             _numbPage = newPageNumb;
+        }
+
+        /// <summary>Запрос на подтверждение действия.</summary>
+        /// <returns>true/false - подтверждение/отмена.</returns>
+        internal static bool Confirmation()
+        {
+            ViewPrint.ConfirmationPrint();
+
+            while (true)
+            {
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo userKey = Console.ReadKey(true);
+                    switch (userKey.Key)
+                    {
+                        case ConsoleKey.N:
+                            return false;
+                        case ConsoleKey.Y:
+                            return true;
+                    }
+                }
+            }
         }
 
         /// <summary>Изменение выделенного файла.</summary>
@@ -138,27 +158,32 @@ namespace ConsoleFileManager.View
                 pageList.Add(fileList[i]);
             }
 
-            ViewPrint.VisualSelectingFile(file, pageList);
+            VisualSelectingFile(file, pageList);
         }
 
-        /// <summary>Запрос на подтверждение действия.</summary>
-        /// <returns>true/false - подтверждение/отмена.</returns>
-        private static bool Confirmation()
+        /// <summary>Вывести страницу в консоль.</summary>
+        /// <param name="selectedFile">Текущий выделенный файл/папка.</param>
+        /// <param name="pageList">Выводимая страница.</param>
+        private void VisualSelectingFile(FileModel selectedFile, List<FileModel> pageList)
         {
-            Console.WriteLine("вы уверены? Y/N");
-            while (true)
+            Console.Clear();
+            bool isSelected = false;
+
+            for (int i = 0; i < pageList.Count; i++)
             {
-                if (Console.KeyAvailable)
+                string printingString = string.Empty;
+                int cursorPos = i+5;
+
+                if (pageList[i] == selectedFile) isSelected = true;
+
+                for (int j = 0; j < pageList[i].DeepthLvl; j++) //отступ в зависимости от уровня списка
                 {
-                    ConsoleKeyInfo userKey = Console.ReadKey(true);
-                    switch (userKey.Key)
-                    {
-                        case ConsoleKey.N:
-                            return false;
-                        case ConsoleKey.Y:
-                            return true;
-                    }
+                    printingString += "    ";
                 }
+
+                printingString += pageList[i].ToString();
+                ViewPrint.PrintFileOnPage(printingString, cursorPos, isSelected, pageList[i].IsFolder); //печать в консоль
+                isSelected = false;
             }
         }
 

@@ -251,14 +251,19 @@ namespace ConsoleFileManager.Controls
             ControllerMethods.AssemblyFilesIntoList();    //объединяем спискм в один
         }
 
+        /// <summary>Перейти на страницу вверх.</summary>
         internal void PageUp()
         {
-            NumbPage++;
+            SelectFirstOnPage();
+            SelectTheTopOne();
+            SelectFirstOnPage();
         }
 
+        /// <summary>Перейти на страницу вниз.</summary>
         internal void PageDown()
         {
-            NumbPage--;
+            SelectLastOnPage();
+            SelectTheLowerOne();
         }
 
         #endregion
