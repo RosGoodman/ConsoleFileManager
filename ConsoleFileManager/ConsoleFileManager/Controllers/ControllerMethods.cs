@@ -132,17 +132,28 @@ namespace ConsoleFileManager.Controllers
             {
                 if (_controller.AllActivedFiles[i] == _controller.SelectedFile)
                 {
-                    if (directionUp && i >= numbMovementLines)
+                    if (directionUp && i >= numbMovementLines)  //если смещение вверх
                     {
                         _controller.NumbPage = (i - numbMovementLines) / _controller.Settings.GetCountStrInPage();    //изменяем номер страницы
                         _controller.SelectedFile = _controller.AllActivedFiles[i - numbMovementLines];
                         break;
                     }
-                    else if (!directionUp && _controller.AllActivedFiles.Count - i > numbMovementLines)
+                    else if (!directionUp) //если смещение вниз
                     {
-                        int numb = _controller.Settings.GetCountStrInPage();
-                        _controller.NumbPage = (i + numbMovementLines) / numb;    //изменяем номер страницы
-                        _controller.SelectedFile = _controller.AllActivedFiles[i + numbMovementLines];
+                        int countOnPage = _controller.Settings.GetCountStrInPage();
+                        
+
+                        if (i + numbMovementLines > _controller.AllActivedFiles.Count - 1)//кол-во элементов на странице меньше макс. возможного
+                        {
+                            _controller.NumbPage = _controller.AllActivedFiles.Count / countOnPage;    //изменяем номер страницы
+                            _controller.SelectedFile = _controller.AllActivedFiles[_controller.AllActivedFiles.Count - 1];
+                        }
+                        else
+                        {
+                            _controller.NumbPage = (i + numbMovementLines) / countOnPage;    //изменяем номер страницы
+                            _controller.SelectedFile = _controller.AllActivedFiles[i + numbMovementLines];
+                        }
+
                         break;
                     }
                 }

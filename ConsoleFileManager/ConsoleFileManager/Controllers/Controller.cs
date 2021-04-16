@@ -233,8 +233,11 @@ namespace ConsoleFileManager.Controls
         /// <summary>Выделить последний файл на странице.</summary>
         internal void SelectLastOnPage()
         {
+            int count = _settings.GetCountStrInPage();
+            int index = ControllerMethods.GetIndexSelectedFile(_allActivedFiles, _selectedFile);
+            int ost = index % count;
             int countStepUp = _settings.GetCountStrInPage() - (ControllerMethods.GetIndexSelectedFile(_allActivedFiles, _selectedFile) % _settings.GetCountStrInPage());
-            ControllerMethods.ChangeSelectionFile(false, countStepUp);
+            ControllerMethods.ChangeSelectionFile(false, countStepUp-1);
         }
 
         /// <summary>Открыть папку или запустить процесс.</summary>
