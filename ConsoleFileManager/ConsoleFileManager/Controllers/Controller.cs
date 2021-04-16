@@ -3,7 +3,6 @@ using ConsoleFileManager.Controllers.Services;
 using ConsoleFileManager.Controllers.Settings;
 using ConsoleFileManager.Models;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 namespace ConsoleFileManager.Controls
@@ -11,6 +10,7 @@ namespace ConsoleFileManager.Controls
     public class Controller
     {
         private Settings _settings = new Settings(); //инициализация класса настроек
+        private ControllerMethods _controllerMethods;
 
         private int _numbPage;  //номер текущей страницы
 
@@ -27,9 +27,21 @@ namespace ConsoleFileManager.Controls
         public delegate void ChangePageHandler(int numbPage);
         public event ChangePageHandler PageChangeNotify;          //определение события изменения номера страницы
 
+        public Controller()
+        {
+            _controllerMethods = new ControllerMethods(this);
+        }
+
         ////////////////////////////////////////////////////////////////////////////////////////
 
         #region Properties
+
+        /// <summary>Настройки программы.</summary>
+        internal Settings Settings
+        {
+            get => _settings;
+            set { _settings = value; }
+        }
 
         /// <summary>Номер текущей страницы.</summary>
         public int NumbPage
@@ -80,7 +92,7 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _rootFolder = value;
-                ControllerMethods.AssemblyFilesIntoList(this, _rootFolder, _mainListFiles, _subListFiles);
+                ControllerMethods.AssemblyFilesIntoList();
             }
         }
 
@@ -91,7 +103,7 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _mainListFiles = value;
-                ControllerMethods.AssemblyFilesIntoList(this, _rootFolder, _mainListFiles, _subListFiles);
+                ControllerMethods.AssemblyFilesIntoList();
             }
         }
 
@@ -102,7 +114,7 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _subListFiles = value;
-                ControllerMethods.AssemblyFilesIntoList(this, _rootFolder, _mainListFiles, _subListFiles);
+                ControllerMethods.AssemblyFilesIntoList();
             }
         }
 
@@ -205,13 +217,13 @@ namespace ConsoleFileManager.Controls
         /// <summary>Выделить файл выше по списку.</summary>
         internal void SelectTheTopOne()
         {
-            ControllerMethods.ChangeSelectionFile(this, true, 1);
+            ControllerMethods.ChangeSelectionFile(true, 1);
         }
 
         /// <summary>Выделить файл ниже по списку.</summary>
         internal void SelectTheLowerOne()
         {
-            ControllerMethods.ChangeSelectionFile(this, false, 1);
+            ControllerMethods.ChangeSelectionFile(false, 1);
         }
 
         /// <summary>Открыть папку или запустить процесс.</summary>
@@ -222,7 +234,7 @@ namespace ConsoleFileManager.Controls
             else
                 ControllerMethods.RuningProcess();
 
-            ControllerMethods.AssemblyFilesIntoList(this);    //объединяем спискм в один
+            ControllerMethods.AssemblyFilesIntoList();    //объединяем спискм в один
         }
 
         #endregion

@@ -11,14 +11,20 @@ namespace ConsoleFileManager.Controllers
     /// <summary>Класс описывающий методы обрабатывающий данные проходящие через контроллер.</summary>
     internal class ControllerMethods
     {
+        private static Controller _controller;
+        public ControllerMethods(Controller controller)
+        {
+            _controller = controller;
+        }
+
         #region ControllerMoethods  
 
         /// <summary>Открыть выбранную директорию.</summary>
         internal static void OpenFolder()
         {
-            List<FileModel> rootList = _rootFolder.GetFiles();
+            List<FileModel> rootList = _controller.RootFolder.GetFiles();
 
-            if (_selectedFile == rootList[0])    //если открываемая папка не является корнем
+            if (_controller.SelectedFile == rootList[0])    //если открываемая папка не является корнем
             {
                 //todo: условие, что корень не является диском (C:, D: и т.д.)
 
@@ -27,11 +33,11 @@ namespace ConsoleFileManager.Controllers
                 return;
             }
 
-            if (!_selectedFile.FolderIsOpen)    //если папка не открыта
+            if (!_controller.SelectedFile.FolderIsOpen)    //если папка не открыта
             {
-                List<FileModel> mainList = _mainListFiles.GetFiles();
+                List<FileModel> mainList = _controller.MainListFiles.GetFiles();
 
-                if (mainList.Contains(_selectedFile))
+                if (mainList.Contains(_controller.SelectedFile))
                     OpenFolderInMainList(mainList); //если открываемая папка в mainListFiles
                 else
                     ChangeRootDir(true);          // если открываемая папка в subListFiles
@@ -39,14 +45,14 @@ namespace ConsoleFileManager.Controllers
             else
             {
                 //закрываем открытую
-                _subListFiles = null;
-                SelectedFile.FolderIsOpen = false;
+                _controller.SubListFiles = null;
+                _controller.SelectedFile.FolderIsOpen = false;
             }
         }
 
         /// <summary>Открываем папку находящуюся в mainListFiles.</summary>
         /// <param name="mainList">Список файлов 1 уровня.</param>
-        private void OpenFolderInMainList(List<FileModel> mainList)
+        private static void OpenFolderInMainList(List<FileModel> mainList)
         {
             //открываем новую папку, закрываем (если открыта) другую
             for (int i = 0; i < mainList.Count; i++)
@@ -58,18 +64,18 @@ namespace ConsoleFileManager.Controllers
                 }
             }
 
-            List<string> filesInOpenDir = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath); //получаем список файлов в папке
-            _subListFiles = new FileListModel(filesInOpenDir);  //записываем в список 2 уровня
-            SelectedFile.FolderIsOpen = true;   //изменяем св-во, срабатывает событие
+            List<string> filesInOpenDir = WorkWithFilesAndDir.GetAllFilesInDir(_controller.SelectedFile.FilePath); //получаем список файлов в папке
+            _controller.SubListFiles = new FileListModel(filesInOpenDir);  //записываем в список 2 уровня
+            _controller.SelectedFile.FolderIsOpen = true;   //изменяем св-во, срабатывает событие
         }
 
         /// <summary>Открыть папку находящуюся в subListFiles.</summary>
         /// <param name="selectedIsRoot">true - Сделать выбранную папку корневой, false - сделать parent коневой.</param>
-        private void ChangeRootDir(bool selectedIsRoot)
+        private static void ChangeRootDir(bool selectedIsRoot)
         {
             //открываем папку в subList
             //заменяем rootList
-            DirectoryInfo di = new DirectoryInfo(_selectedFile.FilePath);
+            DirectoryInfo di = new DirectoryInfo(_controller.SelectedFile.FilePath);
             List<string> newRootList;
 
             if (selectedIsRoot)
@@ -80,19 +86,19 @@ namespace ConsoleFileManager.Controllers
                 newRootList = new List<string>() { parentDir.FullName };
             }
 
-            _rootFolder = new FileListModel(newRootList);
+            _controller.RootFolder = new FileListModel(newRootList);
 
             //флаг об открытии папки selectedFile
-            List<FileModel> rootFile = _rootFolder.GetFiles();
-            _selectedFile = rootFile[0];
-            _selectedFile.FolderIsOpen = true;
+            List<FileModel> rootFile = _controller.RootFolder.GetFiles();
+            _controller.SelectedFile = rootFile[0];
+            _controller.SelectedFile.FolderIsOpen = true;
 
             //новый список mainLIst
-            List<string> newMainList = WorkWithFilesAndDir.GetAllFilesInDir(_selectedFile.FilePath);
-            _mainListFiles = new FileListModel(newMainList);
+            List<string> newMainList = WorkWithFilesAndDir.GetAllFilesInDir(_controller.SelectedFile.FilePath);
+            _controller.MainListFiles = new FileListModel(newMainList);
 
             //обновление subListFiles
-            SubListFiles = null;
+            _controller.SubListFiles = null;
         }
 
         /// <summary>Обновить номер страницы.</summary>
@@ -102,41 +108,41 @@ namespace ConsoleFileManager.Controllers
             int numbStr = 0;
             for (int i = 0; i < newList.Count; i++)
             {
-                if (newList[i] == _selectedFile)
+                if (newList[i] == _controller.SelectedFile)
                 {
                     numbStr = i;
                     break;
                 }
             }
-            NumbPage = numbStr / _settings.GetCountStrInPage();
+            _controller.NumbPage = numbStr / _controller.Settings.GetCountStrInPage();
         }
 
         /// <summary>Запустить выбранный процесс.</summary>
         internal static void RuningProcess()
         {
-            Process.Start(_selectedFile.FilePath);
+            Process.Start(_controller.SelectedFile.FilePath);
         }
 
         /// <summary>Изменить selectedFile в заданном направлении.</summary>
         /// <param name="directionUp">Направление движения по списку (true - вврх, false -вниз).</param>
         /// <param name="numbMovementLines">Количество строк смещения выделения.</param>
-        internal static void ChangeSelectionFile(Controller controller, bool directionUp, int numbMovementLines)
+        internal static void ChangeSelectionFile(bool directionUp, int numbMovementLines)
         {
-            for (int i = 0; i < controller.AllActivedFiles.Count; i++)
+            for (int i = 0; i < _controller.AllActivedFiles.Count; i++)
             {
-                if (controller.AllActivedFiles[i] == controller.SelectedFile)
+                if (_controller.AllActivedFiles[i] == _controller.SelectedFile)
                 {
                     if (directionUp && i >= numbMovementLines)
                     {
-                        controller.NumbPage = (i - numbMovementLines) / controller.Settings.GetCountStrInPage();    //изменяем номер страницы
-                        controller.SelectedFile = controller.AllActivedFiles[i - numbMovementLines];
+                        _controller.NumbPage = (i - numbMovementLines) / _controller.Settings.GetCountStrInPage();    //изменяем номер страницы
+                        _controller.SelectedFile = _controller.AllActivedFiles[i - numbMovementLines];
                         break;
                     }
-                    else if (!directionUp && controller.AllActivedFiles.Count - i > numbMovementLines)
+                    else if (!directionUp && _controller.AllActivedFiles.Count - i > numbMovementLines)
                     {
-                        int numb = controller._settings.GetCountStrInPage();
-                        controller.NumbPage = (i + numbMovementLines) / numb;    //изменяем номер страницы
-                        controller.SelectedFile = controller.AllActivedFiles[i + numbMovementLines];
+                        int numb = _controller.Settings.GetCountStrInPage();
+                        _controller.NumbPage = (i + numbMovementLines) / numb;    //изменяем номер страницы
+                        _controller.SelectedFile = _controller.AllActivedFiles[i + numbMovementLines];
                         break;
                     }
                 }
@@ -144,19 +150,19 @@ namespace ConsoleFileManager.Controllers
         }
 
         /// <summary>Собрать все файлы в один список.</summary>
-        internal static void AssemblyFilesIntoList(Controller controller)
+        internal static void AssemblyFilesIntoList()
         {
             List<FileModel> newList = new List<FileModel>();
 
-            AssemblyCicle(newList, controller.RootFolder, 0);
+            AssemblyCicle(newList, _controller.RootFolder, 0);
 
-            if (controller.MainListFiles != null)
-                AssemblyCicle(newList, controller.MainListFiles, 1, controller.SubListFiles);
+            if (_controller.MainListFiles != null)
+                AssemblyCicle(newList, _controller.MainListFiles, 1, _controller.SubListFiles);
 
             //пересчет номера страницы
             UpdatePageNumer(newList);
 
-            controller.AllActivedFiles = newList;
+            _controller.AllActivedFiles = newList;
         }
 
         /// <summary>Циклы сборки файлов в 1 список.</summary>
