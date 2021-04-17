@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -40,13 +41,23 @@ namespace ConsoleFileManager.Models
         }
 
         /// <summary>Получить данные файла.</summary>
-        /// <returns>Список информации (Имя файла, путь, является ли папкой).</returns>
+        /// <returns>Список информации (Имя файла, путь, размер, дата создания).</returns>
         internal List<string> GetFileInfo()
         {
+            var file = new FileInfo(_filePath);
+            var dir = new DirectoryInfo(_filePath);
+
             List<string> fileInfo = new List<string>();
             fileInfo.Add(_fileName);
             fileInfo.Add(_filePath);
-            fileInfo.Add(_isFolder.ToString());
+
+            if(!_isFolder)
+            {
+                fileInfo.Add((file.Length / 1024).ToString());
+            }
+            else fileInfo.Add("--");
+
+            fileInfo.Add(File.GetCreationTime(_filePath).ToString());
 
             return fileInfo;
         }

@@ -8,33 +8,6 @@ namespace ConsoleFileManager.View
     /// <summary>Класс описывающий вывод данных в консоль.</summary>
     internal class ViewPrint
     {
-        /// <summary>Выделить строку в списке.</summary>
-        private static void VisualSelectingFile(FileModel selectedFile, List<FileModel> pageList)
-        {
-            Console.Clear();
-
-            for (int i = 0; i < pageList.Count; i++)
-            {
-                Console.SetCursorPosition(0, i);
-                Console.Write(new String(' ', 50));
-
-                if (pageList[i].IsFolder) Console.ForegroundColor = ConsoleColor.Yellow;
-                if (pageList[i] == selectedFile) Console.BackgroundColor = ConsoleColor.Gray;
-
-                Console.SetCursorPosition(0, i);
-
-                for (int j = 0; j < pageList[i].DeepthLvl; j++)
-                {
-                    Console.Write("    ");
-                }
-
-                Console.WriteLine(pageList[i].ToString());
-
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.BackgroundColor = ConsoleColor.Black;
-            }
-        }
-
         /// <summary>Вывод строки с наименованием файла/папки.</summary>
         /// <param name="printingStr">Выводимая строка.</param>
         /// <param name="cursorPosY">Положение курсора по оси Y.</param>
@@ -46,14 +19,49 @@ namespace ConsoleFileManager.View
             Console.SetCursorPosition(6, cursorPosY);
             Console.WriteLine(printingStr);
 
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Black;
         }
 
         /// <summary>Вывод в консоль запроса на подтверждение действия.</summary>
         internal static void ConfirmationPrint()
         {
             Console.WriteLine("вы уверены? Y/N");
+        }
 
+        /// <summary>Вывести инфо о клавишах управления.</summary>
+        internal static void PrintButtonsInfo()
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("\"Enter\" - CD/RUN \t \"F4\" - FIND \t \"F5\" - COPY \t \"F6\" - MOVE \t \"F7\" - CREATE \t \"F8\" - RENAME \t \"F9\" - DELETE \t \"F10\" - EXIT \n" +
+                "\"DownArrow\" - MoveDown \t \"UpArrow\" - MoveUp \t \"END\" - LastOnPage \t \"HOME\" - FirstOnPage \t \"PageDown\" - NextPage \t \"PageUp\" - PrevPage");
+            Console.ResetColor();
+        }
+
+        /// <summary>Вывести информацию о файле/папке.</summary>
+        /// <param name="fileInfo">Список с инфо.</param>
+        internal static void PrintFileInfo(List<string> fileInfo)
+        {
+            Console.WriteLine();
+            Console.WriteLine();
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("FileInfo:");
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.WriteLine("FileName: {0}", fileInfo[0]);
+            Console.WriteLine("FilePath: {0}", fileInfo[1]);
+            Console.WriteLine("Size: {0} Kb", fileInfo[2]);
+            Console.WriteLine("CreationTime: {0}", fileInfo[3]);
+
+            Console.ResetColor();
+        }
+
+        internal static void PrintNumbPage(int numbPage)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine();
+            Console.WriteLine("\t\tPage: {0}", numbPage);
         }
     }
 }

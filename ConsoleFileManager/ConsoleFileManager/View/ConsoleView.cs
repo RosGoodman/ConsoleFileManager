@@ -12,6 +12,7 @@ namespace ConsoleFileManager.View
         private Dictionary<int, Command> _buttons = new Dictionary<int, Command>();     //словарь команд (номер/команда)
         private int _countFilesOnPage = 40;  //кол-во файлов на странице
         private int _numbPage;  //текущая страница
+        private List<string> selectFileInfo = new List<string>();
 
         public ConsoleView(Controller controller)
         {
@@ -53,17 +54,14 @@ namespace ConsoleFileManager.View
                     ConsoleKeyInfo userKey = Console.ReadKey(true);
                     switch (userKey.Key)
                     {
-                        case ConsoleKey.Tab:
-                            PressButton(0); //вызов ChangeActivePanelCommand();
-                            break;
                         case ConsoleKey.Enter:
                             if(numbCommand == 1) PressButton(numbCommand); //ChangeDirectoryOrRunProcessCommand();
                             if(numbCommand != 1) PressButton(numbCommand, ReadParamString()); //ChangeDirectoryOrRunProcessCommand();
                             numbCommand = 1;
                             break;
-                        case ConsoleKey.F3:
-                            PressButton(2); //ViewFileCommand();
-                            break;
+                        //case ConsoleKey.F3:
+                        //    PressButton(2); //ViewFileCommand();
+                        //    break;
                         case ConsoleKey.F4:
                             PressButton(3); //FindFileCommand();
                             break;
@@ -158,7 +156,16 @@ namespace ConsoleFileManager.View
                 pageList.Add(fileList[i]);
             }
 
+            Console.Clear();
+            ViewPrint.PrintButtonsInfo();
+            ViewPrint.PrintNumbPage(_numbPage);
             VisualSelectingFile(file, pageList);
+
+            if (file != null)
+            {
+                List<string> fileInfo = file.GetFileInfo();
+                ViewPrint.PrintFileInfo(fileInfo);
+            }
         }
 
         /// <summary>Вывести страницу в консоль.</summary>
@@ -166,7 +173,6 @@ namespace ConsoleFileManager.View
         /// <param name="pageList">Выводимая страница.</param>
         private void VisualSelectingFile(FileModel selectedFile, List<FileModel> pageList)
         {
-            Console.Clear();
             bool isSelected = false;
 
             for (int i = 0; i < pageList.Count; i++)

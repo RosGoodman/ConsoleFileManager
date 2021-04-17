@@ -120,6 +120,7 @@ namespace ConsoleFileManager.Controllers
         /// <summary>Запустить выбранный процесс.</summary>
         internal static void RuningProcess()
         {
+            //todo: try catch
             Process.Start(_controller.SelectedFile.FilePath);
         }
 
