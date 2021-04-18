@@ -210,10 +210,12 @@ namespace ConsoleFileManager.Controllers
             _controller.AllActivedFiles = newList;
         }
 
+
         /// <summary>Циклы сборки файлов в 1 список.</summary>
-        /// <param name="fileListModel"></param>
-        /// <param name="deepthFileListModel"></param>
-        /// <param name="subFileListModel"></param>
+        /// <param name="newList">Заполняемый список.</param>
+        /// <param name="fileListModel">Копируемый список.</param>
+        /// <param name="deepthFileListModel">Глубина списка.</param>
+        /// <param name="subFileListModel">Копируемый суб.список, если есть.</param>
         private static void AssemblyCicle(List<FileModel> newList,
                                     FileListModel fileListModel,
                                     int deepthFileListModel,

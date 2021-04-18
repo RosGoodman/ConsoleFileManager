@@ -29,7 +29,7 @@ namespace ConsoleFileManager.Controllers.Services
                     Directory.Delete(path, true); //true - если директория не пуста удаляем все ее содержимое
                     break;
                 case (FileType.NotFound):
-                    //запись об ошибке - файл/папка не найден
+                    ErrorsList.WriteErrorInFile("Удаляемый файл не найден.");
                     break;
             }
         }
@@ -51,35 +51,67 @@ namespace ConsoleFileManager.Controllers.Services
         {
             if (File.Exists(newPath))
             {
-                //сообщение об ошибке - файл с таким именем уже существует.
+                ErrorsList.WriteErrorInFile("Перемещение файла: файл с таким именем уже существует.");
                 return;
             }
 
             if (Exists(currentPath) == FileType.File)
             {
-                //try
-                string[] splitStr = currentPath.Split(new char[] { '.' });
-                string fileFormat = splitStr[splitStr.Length - 1];
-                File.Move(currentPath, newPath + fileFormat);
+                try
+                {
+                    string[] splitStr = currentPath.Split(new char[] { '.' });
+                    string fileFormat = splitStr[splitStr.Length - 1];
+                    File.Move(currentPath, newPath);
+                }
+                catch(Exception e) { ErrorsList.WriteErrorInFile(e.Message); }
             }
             else if (Exists(currentPath) == FileType.Directory)
             {
-                //try
-                Directory.Move(currentPath, newPath);
+                try
+                {
+                    Directory.Move(currentPath, newPath);
+                }
+                catch(Exception e) { ErrorsList.WriteErrorInFile(e.Message); }
             }
         }
 
+        /// <summary>Копировать файл по указанному пути.</summary>
+        /// <param name="newPath">Новый путь.</param>
+        /// <param name="currentPath">Текущий путь.</param>
+        internal static void CopyFile(string currentPath, string newPath)
+        {
+            try
+            {
+                File.Copy(currentPath, newPath, true);
+            }
+            catch(Exception e)
+            {
+                ErrorsList.WriteErrorInFile(e.Message);
+            }
+        }
+
+        /// <summary>Копировать папку в указанную директорию.</summary>
+        /// <param name="FromDir">Директория копирования.</param>
+        /// <param name="ToDir">Директория вставки.</param>
         internal static void CopyDir(string FromDir, string ToDir)
         {
-            Directory.CreateDirectory(ToDir);
+            Directory.CreateDirectory(ToDir);   //создание копируемой директории.
             foreach (string s1 in Directory.GetFiles(FromDir))
             {
                 string s2 = ToDir + "\\" + Path.GetFileName(s1);
-                File.Copy(s1, s2);
+                try
+                {
+                    File.Copy(s1, s2);
+                }
+                catch (Exception e) { ErrorsList.WriteErrorInFile(e.Message); }
             }
             foreach (string s in Directory.GetDirectories(FromDir))
             {
-                CopyDir(s, ToDir + "\\" + Path.GetFileName(s));
+                try
+                {
+                    CopyDir(s, ToDir + "\\" + Path.GetFileName(s));
+                }
+                catch (Exception e) { ErrorsList.WriteErrorInFile(e.Message); }
             }
         }
 
@@ -123,10 +155,7 @@ namespace ConsoleFileManager.Controllers.Services
                 dir = Directory.GetDirectories(directory);
                 files = Directory.GetFiles(directory);
             }
-            catch(Exception e)
-            {
-                ErrorsList.WriteErrorInFile(e.Message);
-            }
+            catch(Exception e) { ErrorsList.WriteErrorInFile(e.Message); }
             
             List<string> filesAndDir = new List<string>();
 

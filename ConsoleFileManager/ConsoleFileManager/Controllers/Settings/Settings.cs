@@ -13,7 +13,7 @@ namespace ConsoleFileManager.Controllers.Settings
         //для настроек введен базовый класс т.к. не знал сколько настраиваемых параметров будет в итоге.
         //все классы properties внизу
 
-        private string _settingsFileName = "Settings.json";  //имя файла с настройками
+        private readonly string _settingsFileName = "Settings.json";  //имя файла с настройками
         private List<PropertyBase> _propList = new List<PropertyBase>();  //список экземпляров классов
         private Dictionary<string, string> _settings;    //настройки программы (параметр\значение). Для сериадизации.
 
@@ -53,7 +53,7 @@ namespace ConsoleFileManager.Controllers.Settings
         }
 
         /// <summary>Получить максимальное кол-во строк на странице.</summary>
-        /// <returns></returns>
+        /// <returns>Count.</returns>
         internal int GetCountStrInPage()
         {
             foreach(PropertyBase prop in _propList)

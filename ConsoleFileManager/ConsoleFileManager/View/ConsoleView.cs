@@ -18,6 +18,7 @@ namespace ConsoleFileManager.View
             controller.Notify += UpdateLists;
             controller.PageChangeNotify += ChangePageNumb;
             controller.LoadSettings();
+            _countFilesOnPage = controller.CountStringsOnPage;
         }
 
         /// <summary>Установить команду в соответствии с номером.</summary>
@@ -58,44 +59,44 @@ namespace ConsoleFileManager.View
                             break;
                         case ConsoleKey.F5:
                             ViewPrint.HelpMessage("Выберите директорию для вставки, за тем еще раз нажмите F5.");
-                            PressButton(4); //CopyCommand();
+                            PressButton(2); //CopyCommand();
                             break;
                         case ConsoleKey.F6:
                             ViewPrint.HelpMessage("Выберите директорию для вставки, за тем еще раз нажмите F6.");
-                            PressButton(5); //MoveCommand();
+                            PressButton(3); //MoveCommand();
                             break;
                         case ConsoleKey.F7:
-                            PressButton(6, ViewPrint.ReadParamString()); //CreateDirectoryCommand();
+                            PressButton(4, ViewPrint.ReadParamString()); //CreateDirectoryCommand();
                             break;
                         case ConsoleKey.F8:
-                            PressButton(7, ViewPrint.ReadParamString());  //RenameCommand();
+                            PressButton(5, ViewPrint.ReadParamString());  //RenameCommand();
                             break;
                         case ConsoleKey.F9:
-                            if(Confirmation()) PressButton(8); //DeleteCommand();
+                            if(Confirmation()) PressButton(6); //DeleteCommand();
                             break;
                         case ConsoleKey.F10:
-                            PressButton(9); //exitCommand
+                            PressButton(7); //exitCommand
                             exit = true;
                             Console.ResetColor();
                             Console.Clear();
                             break;
                         case ConsoleKey.DownArrow:
-                            PressButton(10);    //SelectTheLowerOneCommand
+                            PressButton(8);    //SelectTheLowerOneCommand
                             break;
                         case ConsoleKey.UpArrow:
-                            PressButton(11);    //SelectTheTopOneCommand
+                            PressButton(9);    //SelectTheTopOneCommand
                             break;
                         case ConsoleKey.End:
-                            PressButton(12);    //SelectingTheLastFileOnPageCommand
+                            PressButton(10);    //SelectingTheLastFileOnPageCommand
                             break;
                         case ConsoleKey.Home:
-                            PressButton(13);    //SelectingTheFirstFileOnPageCommand
+                            PressButton(11);    //SelectingTheFirstFileOnPageCommand
                             break;
                         case ConsoleKey.PageDown:
-                            PressUndoButton(14);    //NextPageCommand
+                            PressUndoButton(12);    //NextPageCommand
                             break;
                         case ConsoleKey.PageUp:
-                            PressButton(14);    //PreviousePageCommand
+                            PressButton(12);    //PreviousePageCommand
                             break;
                         default:
                             break;
@@ -106,10 +107,7 @@ namespace ConsoleFileManager.View
 
         /// <summary>Изменить номер страницы.</summary>
         /// <param name="newPageNumb">Новый номер страницы.</param>
-        private void ChangePageNumb(int newPageNumb)
-        {
-            _numbPage = newPageNumb;
-        }
+        private void ChangePageNumb(int newPageNumb) => _numbPage = newPageNumb;
 
         /// <summary>Запрос на подтверждение действия.</summary>
         /// <returns>true/false - подтверждение/отмена.</returns>

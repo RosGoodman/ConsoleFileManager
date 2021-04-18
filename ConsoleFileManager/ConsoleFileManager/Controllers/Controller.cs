@@ -3,20 +3,19 @@ using ConsoleFileManager.Controllers.Services;
 using ConsoleFileManager.Controllers.Settings;
 using ConsoleFileManager.Models;
 using System.Collections.Generic;
-using System.IO;
 
 namespace ConsoleFileManager.Controls
 {
     public class Controller
     {
-        private Settings _settings = new Settings(); //инициализация класса настроек
+        private readonly Settings _settings = new Settings(); //инициализация класса настроек
 
         private int _numbPage;  //номер текущей страницы
 
         private FileModel _selectedFile;        //выделенный файл
         private FileModel _movingFile;          //копируемый или вырезаемый файл
 
-        private FileListModel _rootFolder;      //корневая папка для 1 уровня.
+        private FileListModel _rootFolder;      //список файлов 0 уровня.
         private FileListModel _mainListFiles;   //список файлов 1 уровня
         private FileListModel _subListFiles;    //список файлов 2 уровня
         private List<FileModel> _allActivedFiles;   //список всех активных файлов
@@ -119,44 +118,14 @@ namespace ConsoleFileManager.Controls
             }
         }
 
-        #endregion
-
-        ////////////////////////////////////////////////////////////////////////////////////////
-
-        #region SelectedFileInfo
-
-        /// <summary>Получить информацию о файле.</summary>
-        /// <returns>Информация построчно.</returns>
-        public List<string> GetSelectedFileInfo()
-        {
-            List<string> fileInfo = _selectedFile.GetFileInfo();
-            long size = 0;
-            string createDate = string.Empty;
-
-            if (!_selectedFile.IsFolder)    //если файл не является папкой
-            {
-                var file = new FileInfo(_selectedFile.FilePath);
-                size = file.Length/1024;    //KB
-                createDate = File.GetCreationTime(_selectedFile.FilePath).ToString();
-            }
-
-            fileInfo.Add(size.ToString() + "KB");
-            fileInfo.Add(createDate);
-
-            return fileInfo;
-        }
+        /// <summary>Максимальное кол-во строк на одной странице.</summary>
+        public int CountStringsOnPage => Settings.GetCountStrInPage();
 
         #endregion
 
         ////////////////////////////////////////////////////////////////////////////////////////
 
         #region SettingsControl interface
-
-        ///// <summary>Установить новое значение параметра.</summary>
-        ///// <param name="settingName">Наименование параметра.</param>
-        ///// <param name="value">Новое значение параметра.</param>
-        //public void SetNewSettingValue(Settings.PropNames settingName, string value)
-        //    => _settings.ChangeProperty(settingName, value);
 
         /// <summary>Загрузить сохраненные настройки.</summary>
         public void LoadSettings()
@@ -186,7 +155,6 @@ namespace ConsoleFileManager.Controls
         #region commands
 
         /// <summary>Удалить файл.</summary>
-        /// <param name="filename">Имя удаляемого файла.</param>
         internal void DeletingFile()
         {
             string currnetPath = SelectedFile.FilePath;
@@ -209,7 +177,7 @@ namespace ConsoleFileManager.Controls
             
             ChangeDirOrRunProcess(false);    //поднимаемся вверх по директории
 
-            Settings.LoadSettings();
+            LoadSettings();
         }
 
         /// <summary>Создать папку.</summary>
@@ -249,7 +217,6 @@ namespace ConsoleFileManager.Controls
         }
 
         /// <summary>Переместить выделенный элемент в указанную директорию.</summary>
-        /// <param name="newPath">Директория вставки.</param>
         internal void Move()
         {
             if (_movingFile == null)
@@ -257,6 +224,7 @@ namespace ConsoleFileManager.Controls
             else
             {
                 string currnetPath = _movingFile.FilePath;
+                string path = _selectedFile.FilePath + "\\" + _movingFile.ToString();
                 WorkWithFilesAndDir.Moving(_selectedFile.FilePath + "\\" + _movingFile.ToString(), currnetPath);
                 _movingFile = null;
 
@@ -265,21 +233,20 @@ namespace ConsoleFileManager.Controls
         }
 
         /// <summary>Выделить файл выше по списку.</summary>
-        internal void SelectTheTopOne()
-        {
-            ControllerMethods.ChangeSelectionFile(true, 1);
-        }
+        internal void SelectTheTopOne() => ControllerMethods.ChangeSelectionFile(true, 1);
 
         /// <summary>Выделить файл ниже по списку.</summary>
-        internal void SelectTheLowerOne()
-        {
-            ControllerMethods.ChangeSelectionFile(false, 1);
-        }
+        internal void SelectTheLowerOne() => ControllerMethods.ChangeSelectionFile(false, 1);
 
         /// <summary>Выделить первый файл на странице.</summary>
         internal void SelectFirstOnPage()
         {
             int countStepUp = ControllerMethods.GetIndexSelectedFile(_allActivedFiles, _selectedFile) % _settings.GetCountStrInPage();
+            if(countStepUp == -1)
+            {
+                ErrorsList.WriteErrorInFile("GetIndexSelectedFile: файл не найден.");
+                countStepUp = 0;
+            }
             ControllerMethods.ChangeSelectionFile(true, countStepUp);
         }
 
@@ -294,11 +261,12 @@ namespace ConsoleFileManager.Controls
         }
 
         /// <summary>Открыть папку или запустить процесс.</summary>
-        internal void ChangeDirOrRunProcess(bool open = true)
+        /// <param name="folderIsOpen">Папка открыта/не открыта.</param>
+        internal void ChangeDirOrRunProcess(bool folderIsOpen = true)
         {
             if (_selectedFile.IsFolder)
             {
-                if(open)
+                if(folderIsOpen)
                     ControllerMethods.OpenFolder();
             }
             else
@@ -335,15 +303,19 @@ namespace ConsoleFileManager.Controls
                 _movingFile = _selectedFile;
             else
             {
-                string newDir = _selectedFile.FilePath + "\\" + _movingFile.ToString();
+                string newPath = _selectedFile.FilePath + "\\" + _movingFile.ToString();
                 if (_movingFile.IsFolder)
                 {
-
                     CreateDirectory(_movingFile.ToString());
+                    string currnetPath = _movingFile.FilePath;
+                    WorkWithFilesAndDir.CopyDir(currnetPath, newPath);
+                }
+                else
+                {
+                    string currnetPath = _movingFile.FilePath;
+                    WorkWithFilesAndDir.CopyFile(currnetPath, newPath);
                 }
 
-                string currnetPath = _movingFile.FilePath;
-                WorkWithFilesAndDir.CopyDir(currnetPath, newDir);
                 _movingFile = null;
 
                 LoadSettings();
