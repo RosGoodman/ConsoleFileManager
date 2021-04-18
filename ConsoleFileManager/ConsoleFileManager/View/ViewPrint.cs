@@ -1,5 +1,4 @@
 ﻿
-using ConsoleFileManager.Models;
 using System;
 using System.Collections.Generic;
 
@@ -26,7 +25,9 @@ namespace ConsoleFileManager.View
         /// <summary>Вывод в консоль запроса на подтверждение действия.</summary>
         internal static void ConfirmationPrint()
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("вы уверены? Y/N");
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         /// <summary>Вывести инфо о клавишах управления.</summary>
@@ -76,8 +77,10 @@ namespace ConsoleFileManager.View
         /// <summary>Вывод вспомогательного сообщения.</summary>
         internal static void HelpMessage(string msg)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine();
             Console.WriteLine(msg);
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

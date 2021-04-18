@@ -56,7 +56,6 @@ namespace ConsoleFileManager.Controllers.Settings
         /// <returns></returns>
         internal int GetCountStrInPage()
         {
-            //TODO: доделать
             foreach(PropertyBase prop in _propList)
             {
                 if (prop.propName == "StringCount")

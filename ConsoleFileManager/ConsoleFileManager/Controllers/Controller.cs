@@ -152,11 +152,11 @@ namespace ConsoleFileManager.Controls
 
         #region SettingsControl interface
 
-        /// <summary>Установить новое значение параметра.</summary>
-        /// <param name="settingName">Наименование параметра.</param>
-        /// <param name="value">Новое значение параметра.</param>
-        public void SetNewSettingValue(Settings.PropNames settingName, string value)
-            => _settings.ChangeProperty(settingName, value);
+        ///// <summary>Установить новое значение параметра.</summary>
+        ///// <param name="settingName">Наименование параметра.</param>
+        ///// <param name="value">Новое значение параметра.</param>
+        //public void SetNewSettingValue(Settings.PropNames settingName, string value)
+        //    => _settings.ChangeProperty(settingName, value);
 
         /// <summary>Загрузить сохраненные настройки.</summary>
         public void LoadSettings()

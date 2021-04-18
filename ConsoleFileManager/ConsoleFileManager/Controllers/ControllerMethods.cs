@@ -2,6 +2,7 @@
 using ConsoleFileManager.Controllers.Services;
 using ConsoleFileManager.Controls;
 using ConsoleFileManager.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -24,16 +25,23 @@ namespace ConsoleFileManager.Controllers
         {
             List<FileModel> rootList = _controller.RootFolder.GetFiles();
 
-            if (_controller.SelectedFile == rootList[0])    //если открываемая папка не является корнем
+            if (rootList.Contains(_controller.SelectedFile))    //если открываемая папка не является корнем
             {
-                //todo: условие, что корень не является диском (C:, D: и т.д.)
-
-                //вверх по корневой папке
-                ChangeRootDir(false);
-                return;
+                if(rootList.Count == 1)
+                {
+                    //вверх по корневой папке
+                    ChangeRootDir(true);
+                }
+                else
+                {
+                    _controller.SelectedFile.FolderIsOpen = true;
+                    List<string> filesInOpenDir = WorkWithFilesAndDir.GetAllFilesInDir(_controller.SelectedFile.FilePath);
+                    _controller.MainListFiles = new FileListModel(filesInOpenDir);
+                }
+                
             }
 
-            if (!_controller.SelectedFile.FolderIsOpen)    //если папка не открыта
+            if (!_controller.SelectedFile.FolderIsOpen && _controller.MainListFiles != null)    //если папка не открыта
             {
                 List<FileModel> mainList = _controller.MainListFiles.GetFiles();
 
@@ -73,14 +81,28 @@ namespace ConsoleFileManager.Controllers
         /// <param name="selectedIsRoot">true - Сделать выбранную папку корневой, false - сделать parent коневой.</param>
         private static void ChangeRootDir(bool selectedIsRoot)
         {
-            //открываем папку в subList
-            //заменяем rootList
             DirectoryInfo di = new DirectoryInfo(_controller.SelectedFile.FilePath);
-            List<string> newRootList;
+            List<string> newRootList = new List<string>() { di.FullName };  //полное имя директории в список
+            List<string> drives = WorkWithFilesAndDir.GetAllDrives();   //список логических дисков
+            bool isDrives = false;
 
             if (selectedIsRoot)
-                newRootList = new List<string>() { di.FullName };
-            else
+            {
+                //проверка, не является ли root логическим диском
+                foreach (var item in drives)
+                {
+                    if (newRootList[0] == item)
+                    {
+                        newRootList = drives;
+                        _controller.MainListFiles = null;
+                        _controller.SubListFiles = null;
+                        isDrives = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isDrives)
             {
                 DirectoryInfo parentDir = di.Parent;
                 newRootList = new List<string>() { parentDir.FullName };
@@ -95,7 +117,7 @@ namespace ConsoleFileManager.Controllers
 
             //новый список mainLIst
             List<string> newMainList = WorkWithFilesAndDir.GetAllFilesInDir(_controller.SelectedFile.FilePath);
-            _controller.MainListFiles = new FileListModel(newMainList);
+            if(rootFile.Count == 1) _controller.MainListFiles = new FileListModel(newMainList);
 
             //обновление subListFiles
             _controller.SubListFiles = null;
@@ -124,8 +146,14 @@ namespace ConsoleFileManager.Controllers
         /// <summary>Запустить выбранный процесс.</summary>
         internal static void RuningProcess()
         {
-            //todo: try catch
-            Process.Start(_controller.SelectedFile.FilePath);
+            try
+            {
+                Process.Start(_controller.SelectedFile.FilePath);
+            }
+            catch(Exception e)
+            {
+                ErrorsList.WriteErrorInFile(e.Message);
+            }
         }
 
         /// <summary>Изменить selectedFile в заданном направлении.</summary>

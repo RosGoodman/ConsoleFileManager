@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -95,18 +96,42 @@ namespace ConsoleFileManager.Controllers.Services
                 return FileType.NotFound;
         }
 
+        /// <summary>Получить список логических дисков.</summary>
+        /// <returns>Список дисов.</returns>
+        internal static List<string> GetAllDrives()
+        {
+            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            List<string> allDrivesList = new List<string>();
+
+            foreach (DriveInfo d in allDrives)
+            {
+                allDrivesList.Add(d.Name);
+            }
+            return allDrivesList;
+        }
+
         /// <summary>Получить список всех файлов указанной директории.</summary>
         /// <param name="directory">Рассматриваемая директория.</param>
         /// <returns>Массив всех файлов.</returns>
         internal static List<string> GetAllFilesInDir(string directory)
         {
-            //TODO: добавить try catch
-            string[] dir = Directory.GetDirectories(directory);
-            string[] files = Directory.GetFiles(directory);
+            string[] dir = null;
+            string[] files = null;
+
+            try
+            {
+                dir = Directory.GetDirectories(directory);
+                files = Directory.GetFiles(directory);
+            }
+            catch(Exception e)
+            {
+                ErrorsList.WriteErrorInFile(e.Message);
+            }
+            
             List<string> filesAndDir = new List<string>();
 
-            AddInList(filesAndDir, dir);
-            AddInList(filesAndDir, files);
+            if(dir != null) AddInList(filesAndDir, dir);
+            if(files != null) AddInList(filesAndDir, files);
 
             return filesAndDir;
         }

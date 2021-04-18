@@ -2,8 +2,6 @@
 using ConsoleFileManager.Controllers.Commands;
 using ConsoleFileManager.Controls;
 using ConsoleFileManager.View;
-using System;
-using System.Threading.Tasks;
 
 namespace ConsoleFileManager
 {

@@ -45,7 +45,6 @@ namespace ConsoleFileManager.View
         public void Explore()
         {
             bool exit = false;
-            FileModel movingFile;
 
             while (!exit)
             {
