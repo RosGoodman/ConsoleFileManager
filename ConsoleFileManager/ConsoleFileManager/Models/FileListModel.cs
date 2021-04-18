@@ -13,13 +13,27 @@ namespace ConsoleFileManager.Models
 
         /// <summary>Создать экземпляры модели файлов и внести в список.</summary>
         /// <param name="entries">Массив файлов в директории.</param>
-        private void AddFilesInList(List<string> entries)
+        internal void AddFilesInList(List<string> entries)
         {
             FileModel fileModel;
             foreach(string file in entries)
             {
                 fileModel = new FileModel(file);
                 _fileList.Add(fileModel);
+            }
+        }
+
+        /// <summary>Удалить файл из списка.</summary>
+        /// <param name="fullName">Полное имя файла (путь.)</param>
+        internal void RemoveFileInList(string fullName)
+        {
+            foreach(FileModel file in _fileList)
+            {
+                if(file.FilePath == fullName)
+                {
+                    _fileList.Remove(file);
+                    break;
+                }
             }
         }
 

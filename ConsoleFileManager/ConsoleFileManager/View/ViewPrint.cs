@@ -33,17 +33,16 @@ namespace ConsoleFileManager.View
         internal static void PrintButtonsInfo()
         {
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("\"Enter\" - CD/RUN \t \"F4\" - FIND \t \"F5\" - COPY \t \"F6\" - MOVE \t \"F7\" - CREATE \t \"F8\" - RENAME \t \"F9\" - DELETE \t \"F10\" - EXIT \n" +
+            Console.WriteLine("\"Enter\" - CD/RUN \t \"F5\" - COPY \t \"F6\" - MOVE \t \"F7\" - CREATE \t \"F8\" - RENAME \t \"F9\" - DELETE \t \"F10\" - EXIT \n" +
                 "\"DownArrow\" - MoveDown \t \"UpArrow\" - MoveUp \t \"END\" - LastOnPage \t \"HOME\" - FirstOnPage \t \"PageDown\" - NextPage \t \"PageUp\" - PrevPage");
             Console.ResetColor();
         }
 
         /// <summary>Вывести информацию о файле/папке.</summary>
         /// <param name="fileInfo">Список с инфо.</param>
-        internal static void PrintFileInfo(List<string> fileInfo)
+        internal static void PrintFileInfo(List<string> fileInfo, int maxCountOnPage)
         {
-            Console.WriteLine();
-            Console.WriteLine();
+            Console.SetCursorPosition(3, maxCountOnPage + 10);
 
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("FileInfo:");
@@ -62,6 +61,23 @@ namespace ConsoleFileManager.View
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine();
             Console.WriteLine("\t\tPage: {0}", numbPage);
+        }
+
+        /// <summary>Считать строку вводимых пользователем параметров.</summary>
+        /// <returns>Параметр.</returns>
+        internal static string ReadParamString()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Введите имя файла:");
+            string commandParam = Console.ReadLine();
+            return commandParam;
+        }
+
+        /// <summary>Вывод вспомогательного сообщения.</summary>
+        internal static void HelpMessage(string msg)
+        {
+            Console.WriteLine();
+            Console.WriteLine(msg);
         }
     }
 }

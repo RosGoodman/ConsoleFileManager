@@ -10,11 +10,11 @@ namespace ConsoleFileManager.Controls
     public class Controller
     {
         private Settings _settings = new Settings(); //инициализация класса настроек
-        private ControllerMethods _controllerMethods;
 
         private int _numbPage;  //номер текущей страницы
 
         private FileModel _selectedFile;        //выделенный файл
+        private FileModel _movingFile;          //копируемый или вырезаемый файл
 
         private FileListModel _rootFolder;      //корневая папка для 1 уровня.
         private FileListModel _mainListFiles;   //список файлов 1 уровня
@@ -27,9 +27,10 @@ namespace ConsoleFileManager.Controls
         public delegate void ChangePageHandler(int numbPage);
         public event ChangePageHandler PageChangeNotify;          //определение события изменения номера страницы
 
+
         public Controller()
         {
-            _controllerMethods = new ControllerMethods(this);
+            ControllerMethods _controllerMethods = new ControllerMethods(this);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +92,7 @@ namespace ConsoleFileManager.Controls
             set
             {
                 _rootFolder = value;
+                SaveSettings();
                 ControllerMethods.AssemblyFilesIntoList();
             }
         }
@@ -153,7 +155,7 @@ namespace ConsoleFileManager.Controls
         /// <summary>Установить новое значение параметра.</summary>
         /// <param name="settingName">Наименование параметра.</param>
         /// <param name="value">Новое значение параметра.</param>
-        public void SetNewSettingValue(string settingName, string value)
+        public void SetNewSettingValue(Settings.PropNames settingName, string value)
             => _settings.ChangeProperty(settingName, value);
 
         /// <summary>Загрузить сохраненные настройки.</summary>
@@ -169,7 +171,13 @@ namespace ConsoleFileManager.Controls
         }
 
         /// <summary>Сохранить настройки.</summary>
-        public void SaveSettings() => _settings.SaveSettings();
+        public void SaveSettings()
+        {
+            List<FileModel> root = _rootFolder.GetFiles();
+            Settings.ChangeProperty(Settings.PropNames.LastPath, root[0].FilePath); //изменяем последний путь в настройках
+
+            _settings.SaveSettings();
+        }
 
         #endregion
 
@@ -179,36 +187,81 @@ namespace ConsoleFileManager.Controls
 
         /// <summary>Удалить файл.</summary>
         /// <param name="filename">Имя удаляемого файла.</param>
-        internal void DeletingFile(string filename)
+        internal void DeletingFile()
         {
-            WorkWithFilesAndDir.DeletingFile(filename);
+            string currnetPath = SelectedFile.FilePath;
+            WorkWithFilesAndDir.DeletingFile(currnetPath);
+
+            List<FileModel> thisRoot;
+
+            //поднимаемся вверх по директории
+            if (SelectedFile.DeepthLvl == 2)
+                thisRoot = _mainListFiles.GetFiles();
+            else
+                thisRoot = _rootFolder.GetFiles();
+
+            foreach (var file in thisRoot)
+            {
+                if (file.FolderIsOpen) file.FolderIsOpen = false; 
+            }
+
+            SelectedFile = thisRoot[0];
+            
+            ChangeDirOrRunProcess(false);    //поднимаемся вверх по директории
+
+            Settings.LoadSettings();
         }
 
         /// <summary>Создать папку.</summary>
         /// <param name="newDirName">Имя создаваемой папки.</param>
         internal void CreateDirectory(string newDirName)
         {
-            WorkWithFilesAndDir.CreatingDirectory(newDirName);
+            string currnetPath = SelectedFile.FilePath;
+            string newFullName = currnetPath + "\\" + newDirName;
+            WorkWithFilesAndDir.CreatingDirectory(newFullName);
+
+            List<string> newFiles = new List<string> { newFullName };
+
+            switch (SelectedFile.DeepthLvl)
+            {
+                case 0:
+                    if(MainListFiles != null) MainListFiles.AddFilesInList(newFiles);
+                    break;
+                case 1:
+                    if(SubListFiles != null) SubListFiles.AddFilesInList(newFiles);
+                    break;
+            };
+
+            ControllerMethods.AssemblyFilesIntoList();
         }
 
         /// <summary>Переименовать выбранный файл/папку.</summary>
         /// <param name="newName">Новое имя файла.</param>
         internal void Rename(string newName)
         {
-            //TODO: заглушка
-            //string oldName = _selectedFile.GetFileInfo()[1];
-            string currnetPath = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\test";
-            WorkWithFilesAndDir.Renaming(newName, currnetPath);
+            string currnetPath = SelectedFile.FilePath;
+            string newFullName = currnetPath.Substring(0, currnetPath.LastIndexOf('\\')) + "\\" + newName;
+
+            WorkWithFilesAndDir.Moving(newFullName, currnetPath);
+            SelectedFile.FilePath = newFullName;
+
+            Notify?.Invoke(_selectedFile, _allActivedFiles);  //вызов события
         }
 
         /// <summary>Переместить выделенный элемент в указанную директорию.</summary>
         /// <param name="newPath">Директория вставки.</param>
-        internal void Move(string newPath)
+        internal void Move()
         {
-            string currnetPath = _selectedFile.GetFileInfo()[1];
-            currnetPath = @"C:\Users\Scan22\Desktop\разработка\C#\Repositories\Geek\ConsoleFileManager\ConsoleFileManager\test";
-            //TODO: проверить получаемые в метод пути
-            WorkWithFilesAndDir.Moving(newPath, currnetPath);
+            if (_movingFile == null)
+                _movingFile = _selectedFile;
+            else
+            {
+                string currnetPath = _movingFile.FilePath;
+                WorkWithFilesAndDir.Moving(_selectedFile.FilePath + "\\" + _movingFile.ToString(), currnetPath);
+                _movingFile = null;
+
+                LoadSettings();
+            }
         }
 
         /// <summary>Выделить файл выше по списку.</summary>
@@ -241,10 +294,13 @@ namespace ConsoleFileManager.Controls
         }
 
         /// <summary>Открыть папку или запустить процесс.</summary>
-        internal void ChangeDirOrRunProcess()
+        internal void ChangeDirOrRunProcess(bool open = true)
         {
             if (_selectedFile.IsFolder)
-                ControllerMethods.OpenFolder();
+            {
+                if(open)
+                    ControllerMethods.OpenFolder();
+            }
             else
                 ControllerMethods.RuningProcess();
 
@@ -264,6 +320,34 @@ namespace ConsoleFileManager.Controls
         {
             SelectLastOnPage();
             SelectTheLowerOne();
+        }
+
+        /// <summary>Завершить работу с программой.</summary>
+        internal void ExitProgram()
+        {
+            SaveSettings();
+        }
+
+        /// <summary>Копировать выбранный файл.</summary>
+        internal void Copy()
+        {
+            if (_movingFile == null)
+                _movingFile = _selectedFile;
+            else
+            {
+                string newDir = _selectedFile.FilePath + "\\" + _movingFile.ToString();
+                if (_movingFile.IsFolder)
+                {
+
+                    CreateDirectory(_movingFile.ToString());
+                }
+
+                string currnetPath = _movingFile.FilePath;
+                WorkWithFilesAndDir.CopyDir(currnetPath, newDir);
+                _movingFile = null;
+
+                LoadSettings();
+            }
         }
 
         #endregion

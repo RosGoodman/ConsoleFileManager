@@ -12,7 +12,6 @@ namespace ConsoleFileManager.View
         private Dictionary<int, Command> _buttons = new Dictionary<int, Command>();     //словарь команд (номер/команда)
         private int _countFilesOnPage = 40;  //кол-во файлов на странице
         private int _numbPage;  //текущая страница
-        private List<string> selectFileInfo = new List<string>();
 
         public ConsoleView(Controller controller)
         {
@@ -45,8 +44,9 @@ namespace ConsoleFileManager.View
         /// <summary>Обработка нажатия клавиш.</summary>
         public void Explore()
         {
-            int numbCommand = 1;    //номер команды, записывается командами ожидающими нажатия enter
             bool exit = false;
+            FileModel movingFile;
+
             while (!exit)
             {
                 if (Console.KeyAvailable)
@@ -55,30 +55,24 @@ namespace ConsoleFileManager.View
                     switch (userKey.Key)
                     {
                         case ConsoleKey.Enter:
-                            if(numbCommand == 1) PressButton(numbCommand); //ChangeDirectoryOrRunProcessCommand();
-                            if(numbCommand != 1) PressButton(numbCommand, ReadParamString()); //ChangeDirectoryOrRunProcessCommand();
-                            numbCommand = 1;
-                            break;
-                        //case ConsoleKey.F3:
-                        //    PressButton(2); //ViewFileCommand();
-                        //    break;
-                        case ConsoleKey.F4:
-                            PressButton(3); //FindFileCommand();
+                            PressButton(1); //ChangeDirectoryOrRunProcessCommand();
                             break;
                         case ConsoleKey.F5:
+                            ViewPrint.HelpMessage("Выберите директорию для вставки, за тем еще раз нажмите F5.");
                             PressButton(4); //CopyCommand();
                             break;
                         case ConsoleKey.F6:
-                            numbCommand = 5; //MoveCommand();
+                            ViewPrint.HelpMessage("Выберите директорию для вставки, за тем еще раз нажмите F6.");
+                            PressButton(5); //MoveCommand();
                             break;
                         case ConsoleKey.F7:
-                            numbCommand = 6; //CreateDirectoryCommand();
+                            PressButton(6, ViewPrint.ReadParamString()); //CreateDirectoryCommand();
                             break;
                         case ConsoleKey.F8:
-                            numbCommand = 7; //RenameCommand();
+                            PressButton(7, ViewPrint.ReadParamString());  //RenameCommand();
                             break;
                         case ConsoleKey.F9:
-                            if(Confirmation()) PressButton(8, ReadParamString()); //DeleteCommand();
+                            if(Confirmation()) PressButton(8); //DeleteCommand();
                             break;
                         case ConsoleKey.F10:
                             PressButton(9); //exitCommand
@@ -164,7 +158,7 @@ namespace ConsoleFileManager.View
             if (file != null)
             {
                 List<string> fileInfo = file.GetFileInfo();
-                ViewPrint.PrintFileInfo(fileInfo);
+                ViewPrint.PrintFileInfo(fileInfo, _countFilesOnPage);
             }
         }
 
@@ -191,14 +185,6 @@ namespace ConsoleFileManager.View
                 ViewPrint.PrintFileOnPage(printingString, cursorPos, isSelected, pageList[i].IsFolder); //печать в консоль
                 isSelected = false;
             }
-        }
-
-        /// <summary>Считать строку вводимых пользователем параметров.</summary>
-        /// <returns>Параметр.</returns>
-        private string ReadParamString()
-        {
-            string commandParam = Console.ReadLine();
-            return commandParam;
         }
     }
 }

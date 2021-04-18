@@ -10,7 +10,7 @@ namespace ConsoleFileManager.Controllers.Commands
 
         public DeleteCommand(Controller r) => _reseiver = r;
 
-        public override void Execute(string filename) => _reseiver.DeletingFile(filename);
+        public override void Execute(string filename = "") => _reseiver.DeletingFile();
 
         public override void Undo(string filename = "") => throw new System.NotImplementedException();
     }
@@ -39,16 +39,32 @@ namespace ConsoleFileManager.Controllers.Commands
         public override void Undo(string filename = "") => throw new System.NotImplementedException();
     }
 
-    /// <summary>Команда перемещения файла/папки в указанную директорию.</summary>
+    /// <summary>Команда перемещения файла/папки в указанную директорию 
+    /// (первое выполнение команды сохраняет путь перемещаемого файла
+    /// второе - перемещает в выделенную директорию).</summary>
     internal class MoveCommand : Command
     {
         private Controller _reseiver;
 
         public MoveCommand(Controller r) => _reseiver = r;
 
-        public override void Execute(string newPath) => _reseiver.Move(newPath);
+        public override void Execute(string newPath = "") => _reseiver.Move();
 
         public override void Undo(string newPath = "") => throw new System.NotImplementedException();
+    }
+
+    /// <summary>Копирование файла/папки
+    /// (первое выполнение команды сохраняет путь копируемого файла
+    /// второе - копирует в выделенную директорию).</summary>
+    internal class CopyCommand : Command
+    {
+        private Controller _reseiver;
+
+        public CopyCommand(Controller r) => _reseiver = r;
+
+        public override void Execute(string b = "") => _reseiver.Copy();
+
+        public override void Undo(string b = "") => throw new System.NotImplementedException();
     }
 
     /// <summary>Выделить файл выше по списку.</summary>
@@ -111,6 +127,7 @@ namespace ConsoleFileManager.Controllers.Commands
         public override void Undo(string b = "") => throw new System.NotImplementedException();
     }
 
+    /// <summary>Выделить последний элемент на странице.</summary>
     internal class PageUpOrDownCommand : Command
     {
         private Controller _reseiver;
@@ -120,5 +137,17 @@ namespace ConsoleFileManager.Controllers.Commands
         public override void Execute(string b = "") => _reseiver.PageUp();
 
         public override void Undo(string b = "") => _reseiver.PageDown();
+    }
+
+    /// <summary>Завершение работы программы.</summary>
+    internal class ExitCommand : Command
+    {
+        private Controller _reseiver;
+
+        public ExitCommand(Controller r) => _reseiver = r;
+
+        public override void Execute(string b = "") => _reseiver.ExitProgram();
+
+        public override void Undo(string b = "") => throw new System.NotImplementedException();
     }
 }

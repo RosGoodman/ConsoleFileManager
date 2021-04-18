@@ -8,11 +8,22 @@ using System.IO;
 namespace ConsoleFileManager.Controllers.Settings
 {
     /// <summary>Класс описывающий действия с настройками.</summary>
-    internal class Settings
+    public class Settings
     {
+        //для настроек введен базовый класс т.к. не знал сколько настраиваемых параметров будет в итоге.
+        //все классы properties внизу
+
         private string _settingsFileName = "Settings.json";  //имя файла с настройками
         private List<PropertyBase> _propList = new List<PropertyBase>();  //список экземпляров классов
         private Dictionary<string, string> _settings;    //настройки программы (параметр\значение). Для сериадизации.
+
+        public enum PropNames
+        {
+            LastPath,
+            WindowWidth,
+            WindowHeight,
+            StringCount
+        }
 
         /// <summary>Список экземпляров настроек.</summary>
         internal List<PropertyBase> PropList
@@ -57,11 +68,11 @@ namespace ConsoleFileManager.Controllers.Settings
         /// <summary>Изменить настройки.</summary>
         /// <param name="propName">Наименование параметра.</param>
         /// <param name="value">Значение параметра.</param>
-        internal void ChangeProperty(string propName, string value)
+        internal void ChangeProperty(PropNames propName, string value)
         {
             foreach(PropertyBase prop in _propList)
             {
-                if (prop.propName == propName)
+                if (prop.propName == propName.ToString())
                 {
                     prop.propValue = value;
                     break;

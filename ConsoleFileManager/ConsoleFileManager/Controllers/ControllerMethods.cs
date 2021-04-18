@@ -106,9 +106,13 @@ namespace ConsoleFileManager.Controllers
         private static void UpdatePageNumber(List<FileModel> newList)
         {
             int numbStr = 0;
-            for (int i = 0; i < newList.Count; i++)
+            for (int i = 0; i < newList.Count; i++)     //поиск в списке selectedFile, по нему определяем № страницы
             {
-                if (newList[i] == _controller.SelectedFile)
+                if(_controller.SelectedFile == null)
+                {
+                    numbStr = 0;
+                }
+                else if (newList[i] == _controller.SelectedFile)
                 {
                     numbStr = i;
                     break;
@@ -174,6 +178,7 @@ namespace ConsoleFileManager.Controllers
             //пересчет номера страницы
             UpdatePageNumber(newList);
 
+            //_controller.SelectedFile = newList[0];
             _controller.AllActivedFiles = newList;
         }
 

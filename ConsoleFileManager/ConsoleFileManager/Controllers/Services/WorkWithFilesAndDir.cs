@@ -43,16 +43,6 @@ namespace ConsoleFileManager.Controllers.Services
                 directoryInfo.Create();
         }
 
-        /// <summary>Переименовать файл/папку.</summary>
-        /// <param name="newName">Новое имя.</param>
-        /// <param name="oldName">Старое имя.</param>
-        internal static void Renaming(string newName, string oldName)
-        {
-            string newFullName = oldName.Substring(0, oldName.LastIndexOf('\\')) + "\\" + newName;
-
-            Moving(newFullName, oldName);
-        }
-
         /// <summary>Изменить путь к файлу.</summary>
         /// <param name="newPath">Новый путь.</param>
         /// <param name="currentPath">Текущий путь.</param>
@@ -66,13 +56,29 @@ namespace ConsoleFileManager.Controllers.Services
 
             if (Exists(currentPath) == FileType.File)
             {
+                //try
                 string[] splitStr = currentPath.Split(new char[] { '.' });
                 string fileFormat = splitStr[splitStr.Length - 1];
                 File.Move(currentPath, newPath + fileFormat);
             }
             else if (Exists(currentPath) == FileType.Directory)
             {
+                //try
                 Directory.Move(currentPath, newPath);
+            }
+        }
+
+        internal static void CopyDir(string FromDir, string ToDir)
+        {
+            Directory.CreateDirectory(ToDir);
+            foreach (string s1 in Directory.GetFiles(FromDir))
+            {
+                string s2 = ToDir + "\\" + Path.GetFileName(s1);
+                File.Copy(s1, s2);
+            }
+            foreach (string s in Directory.GetDirectories(FromDir))
+            {
+                CopyDir(s, ToDir + "\\" + Path.GetFileName(s));
             }
         }
 
